@@ -1,2 +1,2 @@
-import Home from '~/pages/Home';
+import Home from '~/pages/residents/Home';
 export const publicRoutes = [{ path: '/', component: Home }];

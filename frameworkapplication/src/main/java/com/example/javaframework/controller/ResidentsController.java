@@ -1,4 +1,4 @@
 package com.example.javaframework.controller;
 
-public class GuessController {
+public class ResidentsController {
 }

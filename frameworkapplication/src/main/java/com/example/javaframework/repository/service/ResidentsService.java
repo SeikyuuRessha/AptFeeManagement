@@ -1,4 +1,4 @@
 package com.example.javaframework.repository.service;
 
-public class GuessService {
+public class ResidentsService {
 }

@@ -1,4 +1,12 @@
 package com.example.javaframework.entity;
 
-public class Guest {
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Residents {
 }

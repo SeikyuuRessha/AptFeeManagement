@@ -1,4 +1,4 @@
-package com.example.javaframework;
+package com.seikyuuressha.aptfeemanagement;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

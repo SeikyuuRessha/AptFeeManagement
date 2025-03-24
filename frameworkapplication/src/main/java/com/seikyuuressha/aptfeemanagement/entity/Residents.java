@@ -1,4 +1,4 @@
-package com.example.javaframework.entity;
+package com.seikyuuressha.aptfeemanagement.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -1,4 +1,4 @@
-package com.example.javaframework.dto.request;
+package com.seikyuuressha.aptfeemanagement.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

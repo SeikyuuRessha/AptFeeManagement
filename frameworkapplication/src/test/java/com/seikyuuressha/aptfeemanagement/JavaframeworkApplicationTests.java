@@ -1,4 +1,4 @@
-package com.example.javaframework;
+package com.seikyuuressha.aptfeemanagement;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

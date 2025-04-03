@@ -1,10 +1,10 @@
 package com.seikyuuressha.aptfeemanagement.entity;
 
-import com.seikyuuressha.aptfeemanagement.validator.PasswordConstraint;
-import com.seikyuuressha.aptfeemanagement.validator.ValidEmail;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import static com.seikyuuressha.aptfeemanagement.constant.PredefinedRole.USER_ROLE;
 
 @Getter
 @Setter
@@ -21,5 +21,5 @@ public class Residents {
     String email;
     String phone;
     String password;
-    String myRole = "resident";
+    String myRole = USER_ROLE;
 }

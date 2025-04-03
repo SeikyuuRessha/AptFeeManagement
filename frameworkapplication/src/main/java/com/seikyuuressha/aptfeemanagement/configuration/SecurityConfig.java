@@ -14,12 +14,14 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.security.SecureRandom;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-            "residents", "/auth/token", "/auth/introspect", "/auth/logout",
+            "residents", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh"
     };
     @Autowired
     private CustomJWTDecoder customJwtDecoder;
@@ -54,6 +56,6 @@ public class SecurityConfig {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+        return new BCryptPasswordEncoder(15);
     }
 }

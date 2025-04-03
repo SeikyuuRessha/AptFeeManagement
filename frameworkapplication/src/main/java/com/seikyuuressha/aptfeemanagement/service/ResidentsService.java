@@ -33,7 +33,6 @@ public class ResidentsService {
     public ResidentResponse createResidents(ResidentsCreationRequest request) {
         Residents residents = residentsMapper.toResidents(request);
         residents.setPassword(passwordEncoder.encode(request.getPassword()));
-        log.info(passwordEncoder.encode("123456789"));
         try {
             residents = residentsRepository.save(residents);
         } catch (DataIntegrityViolationException exception) {

@@ -5,6 +5,8 @@ import com.seikyuuressha.aptfeemanagement.validator.ValidEmail;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import static com.seikyuuressha.aptfeemanagement.constant.PredefinedRole.USER_ROLE;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class ResidentsCreationRequest {
     @ValidEmail
     String email;
     String phone;
-    @PasswordConstraint
+    @PasswordConstraint(message = "INVALID_PASSWORD")
     String password;
-    String myRole = "resident";
+    String myRole = USER_ROLE;
 }

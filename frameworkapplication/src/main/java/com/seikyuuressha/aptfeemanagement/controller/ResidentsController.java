@@ -3,8 +3,8 @@ package com.seikyuuressha.aptfeemanagement.controller;
 import com.seikyuuressha.aptfeemanagement.dto.request.ApiResponse;
 import com.seikyuuressha.aptfeemanagement.dto.request.ResidentsCreationRequest;
 import com.seikyuuressha.aptfeemanagement.dto.response.ResidentResponse;
-import com.seikyuuressha.aptfeemanagement.entity.Residents;
 import com.seikyuuressha.aptfeemanagement.service.ResidentsService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +20,7 @@ public class ResidentsController {
     ResidentsService residentsService;
 
     @PostMapping
-    ApiResponse<ResidentResponse> createResident(@RequestBody ResidentsCreationRequest request) {
+    ApiResponse<ResidentResponse> createResident(@RequestBody @Valid ResidentsCreationRequest request) {
         return ApiResponse.<ResidentResponse>builder()
                 .result(residentsService.createResidents(request))
                 .build();

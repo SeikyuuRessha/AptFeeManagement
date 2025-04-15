@@ -1,0 +1,31 @@
+{
+  "name": "electronreactapp",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/hieudo2808/ElectronApp#readme",
+  "bugs": {
+    "url": "https://github.com/hieudo2808/ElectronApp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hieudo2808/ElectronApp.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "./main.js",
+  "scripts": {
+    "realStart": "electron .",
+    "start": "concurrently \"npm run start-react\" \"npm run start-electron\"",
+    "start-react": "cd react-integration && npm start",
+    "start-electron": "npx electronmon --trace-warnings ."
+  },
+  "dependencies": {
+    "electron": "^34.2.0",
+    "electron-squirrel-startup": "^1.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "wait-on": "^8.0.2"
+  }
+}

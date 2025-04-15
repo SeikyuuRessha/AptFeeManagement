@@ -96,4 +96,4 @@ out/
 .prettierrc
 
 
-/frameworkapplication/src/main/resources/application.properties
+frameworkapplication/src/main/resources/application.properties

@@ -24,10 +24,10 @@ public class ApplicationInitConfig {
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driverClassName",
-            havingValue = "com.mysql.cj.jdbc.Driver")
+            havingValue = "com.microsoft.sqlserver.jdbc.SQLServerDriver")
     ApplicationRunner applicationRunner(ResidentsRepository residentsRepository) {
         log.info("Initializing application.....");
-        return args -> {
+        return _ -> {
             if (residentsRepository.findByEmail("hieu.dhm172808@gmail.com").isEmpty()) {
                 Residents user = Residents.builder()
                         .email("hieu.dhm172808@gmail.com")

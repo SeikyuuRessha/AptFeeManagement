@@ -1,6 +1,5 @@
 package com.seikyuuressha.aptfeemanagement.entity;
 
-import com.seikyuuressha.aptfeemanagement.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +26,5 @@ public class Payments {
 
     BigDecimal amount;
     Date paymentDate;
-
-    @Enumerated(EnumType.STRING)
-    PaymentStatus status;
+    String status;
 }

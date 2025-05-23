@@ -95,5 +95,10 @@ out/
 /.vscode
 .prettierrc
 
-# Spring Boot configuration files
-frameworkapplication/src/main/resources/application.properties
+/frontend/.vscode
+/frontend/.next
+/frontend/.node_modules
+
+/backend/.vscode
+/backend/node_modules
+/backend/.prettierrc

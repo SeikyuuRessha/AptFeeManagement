@@ -1,0 +1,146 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Apartment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roomNumber Int
+  area       Float
+
+  buildingId    String
+  building      Building       @relation(fields: [buildingId], references: [id])
+  residentId    String
+  resident      Resident       @relation(fields: [residentId], references: [id])
+  invoices      Invoice[]
+  subscriptions Subscription[]
+}
+
+model Building {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String
+  address        String
+  apartmentCount Int
+
+  apartments Apartment[]
+}
+
+model Contract {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status       String
+  documentPath String
+
+  residentId String   @unique
+  resident   Resident @relation(fields: [residentId], references: [id])
+}
+
+model InvoiceDetail {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quantity Int
+  total    BigInt
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model Invoice {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  totalAmount BigInt
+  dueDate     DateTime
+  status      String
+
+  apartmentId    String
+  apartment      Apartment       @relation(fields: [apartmentId], references: [id])
+  invoiceDetails InvoiceDetail[]
+  payments       Payment[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  message   String
+  residents Resident[]
+}
+
+// Thay enum bằng String
+model Payment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  amount      BigInt
+  paymentDate DateTime
+  status      String @default("PENDING")
+
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+}
+
+model Resident {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fullName     String
+  email        String  @unique
+  password     String
+  phone        String
+  refreshToken String?
+  role         String  @default("resident")
+
+  apartments    Apartment[]
+  contract      Contract?
+  notifications Notification[]
+}
+
+model Service {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  unitPrice   BigInt
+  name        String
+  description String
+
+  invoiceDetails InvoiceDetail[]
+  subscriptions  Subscription[]
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  frequency       String
+  nextBillingDate DateTime
+  status          String
+
+  serviceId   String
+  service     Service   @relation(fields: [serviceId], references: [id])
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id])
+}

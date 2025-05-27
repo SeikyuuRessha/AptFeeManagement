@@ -47,7 +47,7 @@ describe("Buildings E2E", () => {
     it("POST /buildings - create building", async () => {
         const response = await request(app.getHttpServer())
             .post("/buildings")
-            .set("Authorization", "Bearer ADMIN_TOKEN") // nếu có Auth, mock hoặc disable guard
+            .set("Authorization", "Bearer ADMIN_TOKEN")
             .send(buildingDto)
             .expect(201);
 

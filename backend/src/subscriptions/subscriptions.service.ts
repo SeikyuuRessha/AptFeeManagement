@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { handleService } from 'src/common/utils/handleService';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { handleService } from '../common/utils/handleService';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateSubscriptionDTO } from './dtos/create-subscription.dto';
 import { UpdateSubscriptionDTO } from './dtos/update-subscription.dto';
 

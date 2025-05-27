@@ -11,9 +11,9 @@ import {
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDTO } from './dtos/create-subscription.dto';
 import { UpdateSubscriptionDTO } from './dtos/update-subscription.dto';
-import { AccessTokenGuard } from 'src/common/guards/accessToken.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
+import { AccessTokenGuard } from '../common/guards/accessToken.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
 @Controller('subscriptions')
 export class SubscriptionsController {

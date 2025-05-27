@@ -5,12 +5,13 @@
 - Tải xuống thư viện cần thiết: `npm i`
 - Đồng bộ schema với db: `npx prisma migrate dev`
 - Khởi chạy server trong chế độ watch mode: `npm run start:dev`
+- Kiểm thử chương trình: `npm run test`
 
 ## Prisma
 
 ```
 datasource db {
-    provider = "mysql"
+    provider = "sqlserver"
     url      = env("DATABASE_URL")
 }
 ```

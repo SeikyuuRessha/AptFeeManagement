@@ -30,3 +30,8 @@ datasource db {
 
 - Cơ bản gồm `module`, `provider`, `controller`, **module** là đại diện cho từng chức năng của ứng dụng khai báo `provider` và `controller` và các thư viện khác, **controller** là nơi khai báo các tuyến đg và xử lý các yêu cầu nhẹ như lấy `path` hay `params`, **service** là nơi xử lý logic nghiệp vụ
 - Có `decorators`, `guards` chính như **AccessTokenGuard, RefreshTokenGuard, RolesGuard và Roles** để chỉ định một role cụ thể như là `resident` hay là `admin`
+
+## Kiểm thử
+
+- Sử dụng kiểm thử cho mỗi modules, bao gồm kiểm thử đơn vị (Unit Test), kiểm thử tích hợp (Integration test) và kiểm thử e2e.
+- Lưu ý khi kiểm thử: Thay đổi toàn bộ đường dẫn trong các file services và controllers thành đường dẫn tương đối, vì /test không được cấu hình, do đó nó không thể hiểu được /src nằm ở đâu.

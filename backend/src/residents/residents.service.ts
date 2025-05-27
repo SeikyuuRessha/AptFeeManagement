@@ -1,43 +1,39 @@
-import { Injectable } from '@nestjs/common';
-import { handleService } from 'src/common/utils/handleService';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateResidentDTO } from './dtos/update-resident.dto';
+import { Injectable } from "@nestjs/common";
+import { handleService } from "../common/utils/handleService";
+import { PrismaService } from "../prisma/prisma.service";
+import { UpdateResidentDTO } from "./dtos/update-resident.dto";
 
 @Injectable()
 export class ResidentsService {
-  constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService) {}
 
-  async getResidents() {
-    return handleService(() => this.prisma.resident.findMany());
-  }
+    async getResidents() {
+        return handleService(() => this.prisma.resident.findMany());
+    }
 
-  async getResident(id: string) {
-    return handleService(() =>
-      this.prisma.resident.findUnique({ where: { id } }),
-    );
-  }
+    async getResident(id: string) {
+        return handleService(() => this.prisma.resident.findUnique({ where: { id } }));
+    }
 
-  async search(query: string) {
-    return handleService(() =>
-      this.prisma.resident.findMany({
-        where: {
-          OR: [
-            { fullName: { contains: query } },
-            { email: { contains: query } },
-            { phone: { contains: query } },
-          ],
-        },
-      }),
-    );
-  }
+    async search(query: string) {
+        return handleService(() =>
+            this.prisma.resident.findMany({
+                where: {
+                    OR: [
+                        { fullName: { contains: query } },
+                        { email: { contains: query } },
+                        { phone: { contains: query } },
+                    ],
+                },
+            })
+        );
+    }
 
-  async updateResident(id: string, data: UpdateResidentDTO) {
-    return handleService(() =>
-      this.prisma.resident.update({ where: { id }, data }),
-    );
-  }
+    async updateResident(id: string, data: UpdateResidentDTO) {
+        return handleService(() => this.prisma.resident.update({ where: { id }, data }));
+    }
 
-  async deleteResident(id: string) {
-    return handleService(() => this.prisma.resident.delete({ where: { id } }));
-  }
+    async deleteResident(id: string) {
+        return handleService(() => this.prisma.resident.delete({ where: { id } }));
+    }
 }

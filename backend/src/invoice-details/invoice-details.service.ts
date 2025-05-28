@@ -3,7 +3,7 @@ import { handleService } from "../common/utils/handleService";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateInvoiceDetailDTO } from "./dtos/create-invoice-detail.dto";
 import { UpdateInvoiceDetailDTO } from "./dtos/update-invoice-detail.dto";
-import { Invoice } from "generated/prisma";
+import { Invoice } from "@prisma/client";
 import { PaymentStatus } from "../common/enums";
 import calcNextBillingDate from "../common/utils/calcNextBillingDate";
 

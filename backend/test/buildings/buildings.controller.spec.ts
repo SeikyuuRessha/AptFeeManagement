@@ -1,111 +1,78 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { BuildingsController } from "../../src/buildings/buildings.controller";
 import { BuildingsService } from "../../src/buildings/buildings.service";
-import { CreateBuildingDTO } from "../../src/buildings/dtos/create-building.dto";
-import { UpdateBuildingDTO } from "../../src/buildings/dtos/update-building.dto";
-import { AccessTokenGuard } from "../../src/common/guards/accessToken.guard";
-import { RolesGuard } from "../../src/common/guards/roles.guard";
+
+const success = (data: any) => ({ code: 1, msg: "Success", data });
+
+const cases = {
+    create: [
+        {
+            input: { name: "Test 1", address: "Addr 1", apartmentCount: 5 },
+            result: { id: "1", name: "Test 1", address: "Addr 1", apartmentCount: 5 },
+        },
+        {
+            input: { name: "Test 2", address: "Addr 2", apartmentCount: 10 },
+            result: { id: "2", name: "Test 2", address: "Addr 2", apartmentCount: 10 },
+        },
+    ],
+    update: [
+        {
+            id: "1",
+            input: { name: "Updated 1", address: "Updated Addr 1", apartmentCount: 6 },
+            result: { id: "1", name: "Updated 1", address: "Updated Addr 1", apartmentCount: 6 },
+        },
+        {
+            id: "2",
+            input: { name: "Updated 2", address: "Updated Addr 2", apartmentCount: 9 },
+            result: { id: "2", name: "Updated 2", address: "Updated Addr 2", apartmentCount: 9 },
+        },
+    ],
+};
 
 describe("BuildingsController", () => {
     let controller: BuildingsController;
 
-    const mockBuildingsService = {
-        getBuildings: jest.fn(),
-        getBuilding: jest.fn(),
+    const mockService = {
         createBuilding: jest.fn(),
+        getBuildings: jest.fn().mockResolvedValue(success(cases.create.map((c) => c.result))),
+        getBuilding: jest.fn().mockResolvedValue(success(cases.create[0].result)),
         updateBuilding: jest.fn(),
-        deleteBuilding: jest.fn(),
+        deleteBuilding: jest.fn().mockResolvedValue(success(cases.create[0].result)),
     };
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [BuildingsController],
-            providers: [
-                {
-                    provide: BuildingsService,
-                    useValue: mockBuildingsService,
-                },
-            ],
-        })
-            .overrideGuard(AccessTokenGuard)
-            .useValue({ canActivate: () => true }) // Bypass auth
-            .overrideGuard(RolesGuard)
-            .useValue({ canActivate: () => true }) // Bypass roles
-            .compile();
+            providers: [{ provide: BuildingsService, useValue: mockService }],
+        }).compile();
 
         controller = module.get<BuildingsController>(BuildingsController);
     });
 
-    it("should be defined", () => {
-        expect(controller).toBeDefined();
+    it.each(cases.create)("should create building %#", async ({ input, result }) => {
+        mockService.createBuilding.mockResolvedValueOnce(success(result));
+        const res = await controller.createBuilding(input);
+        expect(res).toEqual(success(result));
     });
 
-    describe("getBuildings", () => {
-        it("should return all buildings", async () => {
-            const buildings = [{ id: "1", name: "A", address: "123 St", apartmentCount: 10 }];
-            mockBuildingsService.getBuildings.mockResolvedValue(buildings);
-
-            const result = await controller.getBuildings();
-            expect(result).toEqual(buildings);
-        });
+    it("should get all buildings", async () => {
+        const res = await controller.getBuildings();
+        expect(res).toEqual(success(cases.create.map((c) => c.result)));
     });
 
-    describe("getBuilding", () => {
-        it("should return a building by id", async () => {
-            const building = { id: "1", name: "B", address: "456 Ave", apartmentCount: 5 };
-            mockBuildingsService.getBuilding.mockResolvedValue(building);
-
-            const result = await controller.getBuilding("1");
-            expect(result).toEqual(building);
-        });
+    it("should get building by id", async () => {
+        const res = await controller.getBuilding("1");
+        expect(res).toEqual(success(cases.create[0].result));
     });
 
-    describe("createBuilding", () => {
-        it("should create a building", async () => {
-            const dto: CreateBuildingDTO = {
-                name: "C",
-                address: "789 Blvd",
-                apartmentCount: 12,
-            };
-            const created = { id: "1", ...dto };
-            mockBuildingsService.createBuilding.mockResolvedValue(created);
-
-            const result = await controller.createBuilding(dto);
-            expect(result).toEqual(created);
-        });
+    it.each(cases.update)("should update building %#", async ({ id, input, result }) => {
+        mockService.updateBuilding.mockResolvedValueOnce(success(result));
+        const res = await controller.updateBuilding(id, input);
+        expect(res).toEqual(success(result));
     });
 
-    describe("updateBuilding", () => {
-        it("should update a building", async () => {
-            const dto: UpdateBuildingDTO = {
-                name: "Updated",
-                apartmentCount: 20,
-            };
-            const updated = {
-                id: "1",
-                name: "Updated",
-                address: "Old Address",
-                apartmentCount: 20,
-            };
-            mockBuildingsService.updateBuilding.mockResolvedValue(updated);
-
-            const result = await controller.updateBuilding("1", dto);
-            expect(result).toEqual(updated);
-        });
-    });
-
-    describe("deleteBuilding", () => {
-        it("should delete a building", async () => {
-            const deleted = {
-                id: "1",
-                name: "Deleted",
-                address: "Nowhere",
-                apartmentCount: 0,
-            };
-            mockBuildingsService.deleteBuilding.mockResolvedValue(deleted);
-
-            const result = await controller.deleteBuilding("1");
-            expect(result).toEqual(deleted);
-        });
+    it("should delete building", async () => {
+        const res = await controller.deleteBuilding("1");
+        expect(res).toEqual(success(cases.create[0].result));
     });
 });

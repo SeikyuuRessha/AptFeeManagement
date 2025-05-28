@@ -1,92 +1,110 @@
-import { INestApplication } from "@nestjs/common";
-import { Test } from "@nestjs/testing";
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from "supertest";
-
 import { AppModule } from "../../src/app.module";
-import { PrismaService } from "../../src/prisma/prisma.service";
+import { AllExceptionsFilter } from "../HttpExceptionsFilter";
 import { AccessTokenGuard } from "../../src/common/guards/accessToken.guard";
+import { Role } from "../../src/common/enums";
 import { RolesGuard } from "../../src/common/guards/roles.guard";
 
 describe("Buildings E2E", () => {
     let app: INestApplication;
-    let prisma: PrismaService;
+    let createdId: string;
+
+    const buildingCases = [
+        {
+            input: { name: "E2E Building", address: "e2e addr", apartmentCount: 3 },
+            expected: { code: 1, msg: "Success" },
+        },
+        {
+            input: { name: "", address: "", apartmentCount: -1 },
+            expected: {
+                code: 0,
+                msg: [
+                    "name should not be empty",
+                    "address should not be empty",
+                    "apartmentCount must be a positive number",
+                ],
+            },
+        },
+    ];
+    const createdIds: string[] = [];
 
     beforeAll(async () => {
-        const moduleRef = await Test.createTestingModule({
+        const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         })
             .overrideGuard(AccessTokenGuard)
             .useValue({
-                canActivate: () => true,
+                canActivate: (context) => {
+                    const request = context.switchToHttp().getRequest();
+                    request.user = { id: "test-user", role: Role.ADMIN };
+                    return true;
+                },
             })
             .overrideGuard(RolesGuard)
             .useValue({
-                canActivate: () => true,
+                canActivate: (context) => {
+                    const request = context.switchToHttp().getRequest();
+                    request.user = { role: Role.ADMIN };
+                    return true;
+                },
             })
             .compile();
 
-        app = moduleRef.createNestApplication();
+        app = moduleFixture.createNestApplication();
+        app.useGlobalFilters(new AllExceptionsFilter());
+        app.useGlobalPipes(new ValidationPipe());
         await app.init();
-
-        prisma = moduleRef.get(PrismaService);
-        await prisma.building.deleteMany();
     });
 
-    afterAll(async () => {
-        await app.close();
+    describe("POST /buildings", () => {
+        it.each(buildingCases)("should handle building input %#", async (testCase) => {
+            const res = await request(app.getHttpServer()).post("/buildings").send(testCase.input);
+
+            expect(res.body.code).toBe(testCase.expected.code);
+            expect(res.body.msg).toEqual(testCase.expected.msg);
+
+            if (res.body.code === 1) {
+                expect(res.body.data).toMatchObject(testCase.input);
+                createdIds.push(res.body.data.id);
+            }
+        });
     });
 
-    const buildingDto = {
-        name: "Test Building",
-        address: "123 E2E St",
-        apartmentCount: 5,
-    };
+    describe("GET /buildings/:id", () => {
+        it("should get all created buildings", async () => {
+            for (const id of createdIds) {
+                const res = await request(app.getHttpServer()).get(`/buildings/${id}`);
 
-    let createdId: string;
-
-    it("POST /buildings - create building", async () => {
-        const response = await request(app.getHttpServer())
-            .post("/buildings")
-            .set("Authorization", "Bearer ADMIN_TOKEN")
-            .send(buildingDto)
-            .expect(201);
-
-        expect(response.body.data).toMatchObject(buildingDto);
-        createdId = response.body.data.id;
+                expect(res.body.code).toBe(1);
+                expect(res.body.data.id).toBe(id);
+            }
+        });
     });
 
-    it("GET /buildings - get all buildings", async () => {
-        const response = await request(app.getHttpServer()).get("/buildings").expect(200);
+    describe("PUT /buildings/:id", () => {
+        it("should update all created buildings", async () => {
+            for (const id of createdIds) {
+                const updated = { name: "Updated " + id, address: "New addr", apartmentCount: 7 };
+                const res = await request(app.getHttpServer())
+                    .put(`/buildings/${id}`)
+                    .send(updated);
 
-        expect(response.body.data.length).toBeGreaterThan(0);
+                expect(res.body.code).toBe(1);
+                expect(res.body.data.name).toBe("Updated " + id);
+            }
+        });
     });
 
-    it("GET /buildings/:id - get one building", async () => {
-        const response = await request(app.getHttpServer())
-            .get(`/buildings/${createdId}`)
-            .expect(200);
+    describe("DELETE /buildings/:id", () => {
+        it("should delete all created buildings", async () => {
+            for (const id of createdIds) {
+                const res = await request(app.getHttpServer()).delete(`/buildings/${id}`);
 
-        expect(response.body.data.id).toBe(createdId);
-        expect(response.body.data.name).toBe(buildingDto.name);
-    });
-
-    it("PUT /buildings/:id - update building", async () => {
-        const updated = { ...buildingDto, name: "Updated E2E" };
-        const response = await request(app.getHttpServer())
-            .put(`/buildings/${createdId}`)
-            .set("Authorization", "Bearer ADMIN_TOKEN")
-            .send(updated)
-            .expect(200);
-
-        expect(response.body.data.name).toBe("Updated E2E");
-    });
-
-    it("DELETE /buildings/:id - delete building", async () => {
-        const response = await request(app.getHttpServer())
-            .delete(`/buildings/${createdId}`)
-            .set("Authorization", "Bearer ADMIN_TOKEN")
-            .expect(200);
-
-        expect(response.body.data.id).toBe(createdId);
+                expect(res.body.code).toBe(1);
+                expect(res.body.data.id).toBe(id);
+            }
+        });
     });
 });

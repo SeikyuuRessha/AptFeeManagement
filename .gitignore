@@ -102,3 +102,5 @@ out/
 /backend/.vscode
 /backend/node_modules
 /backend/.prettierrc
+/backend/dist
+/backend/generated

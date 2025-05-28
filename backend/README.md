@@ -4,6 +4,7 @@
 
 - Tải xuống thư viện cần thiết: `npm i`
 - Đồng bộ schema với db: `npx prisma migrate dev`
+- Generate prisma client: `npx prisma generate`
 - Khởi chạy server trong chế độ watch mode: `npm run start:dev`
 - Kiểm thử chương trình: `npm run test`
 

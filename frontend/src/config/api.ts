@@ -14,7 +14,9 @@ api.interceptors.request.use(
     async (config) => {
         const { accessToken, refreshToken } = jwtManager.getTokens();
 
-        if (accessToken && refreshToken) {
+        if ((accessToken && refreshToken) && (accessToken !="undefined")) {
+            console.log("Access Token:", accessToken, typeof accessToken);
+            console.log("Refresh Token:", refreshToken, typeof refreshToken);
             const decodedToken = jwtDecode(accessToken);
 
             if (decodedToken.exp && decodedToken.exp < Date.now() / 1000) {
@@ -40,7 +42,7 @@ api.interceptors.request.use(
         } else {
             jwtManager.removeTokens();
         }
-
+        console.log("Request Config:", config);
         return config;
     },
     (error) => Promise.reject(error)

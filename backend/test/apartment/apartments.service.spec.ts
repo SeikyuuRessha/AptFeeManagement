@@ -1,12 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ApartmentsService } from "../../src/apartments/apartments.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
-import { AppException } from "../../src/common/exception/app-exception";
-import { ExceptionCode } from "../../src/common/exception/exception-code";
 import {
     mockApartments,
     mockResident,
-    mockApartmentWithRelations,
     getApartmentsTestCases,
     getApartmentTestCases,
     createApartmentTestCases,

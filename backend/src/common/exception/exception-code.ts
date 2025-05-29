@@ -22,8 +22,8 @@ export const ExceptionCode = {
     NOTIFICATION_NOT_FOUND: { code: 2010, msg: "Notification not found" },
     INVOICE_DETAIL_NOT_FOUND: { code: 2011, msg: "Invoice detail not found" },
 
-    INVALID_PASSWORD: { code: 1002, msg: "Password is incorrect" },
-    ACCESS_DENIED: { code: 1003, msg: "Access denied" },
+    INVALID_PASSWORD: { code: 1008, msg: "Password is incorrect" },
+    ACCESS_DENIED: { code: 1009, msg: "Access denied" },
     TOKEN_FAILED: { code: 4000, msg: "Token validation failed" },
     HASHING_FAILED: { code: 4001, msg: "Hashing failed" },
 };

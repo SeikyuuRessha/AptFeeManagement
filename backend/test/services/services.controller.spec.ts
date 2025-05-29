@@ -4,7 +4,6 @@ import { ServicesService } from "../../src/services/services.service";
 import { AccessTokenGuard } from "../../src/common/guards/accessToken.guard";
 import { RolesGuard } from "../../src/common/guards/roles.guard";
 import {
-    mockServices,
     getServicesTestCases,
     getServiceTestCases,
     createServiceTestCases,

@@ -2,8 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { PaymentsService } from "../../src/payments/payments.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
 import {
-    mockPayments,
-    mockInvoice,
     setMockPrisma,
     getPaymentsTestCases,
     getPaymentTestCases,

@@ -4,7 +4,6 @@ import { PaymentsService } from "../../src/payments/payments.service";
 import { AccessTokenGuard } from "../../src/common/guards/accessToken.guard";
 import { RolesGuard } from "../../src/common/guards/roles.guard";
 import {
-    mockPayments,
     getPaymentsTestCases,
     getPaymentTestCases,
     createPaymentTestCases,

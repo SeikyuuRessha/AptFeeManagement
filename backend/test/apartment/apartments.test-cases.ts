@@ -1,5 +1,3 @@
-// Test cases for Apartments module
-
 export interface ApartmentTestCase {
     description: string;
     mockSetup?: () => void;

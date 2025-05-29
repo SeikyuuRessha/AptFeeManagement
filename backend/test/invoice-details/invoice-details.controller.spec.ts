@@ -4,7 +4,6 @@ import { InvoiceDetailsService } from "../../src/invoice-details/invoice-details
 import { AccessTokenGuard } from "../../src/common/guards/accessToken.guard";
 import { RolesGuard } from "../../src/common/guards/roles.guard";
 import {
-    mockInvoiceDetails,
     getInvoiceDetailsTestCases,
     getInvoiceDetailTestCases,
     createInvoiceDetailTestCases,

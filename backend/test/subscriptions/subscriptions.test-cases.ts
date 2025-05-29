@@ -1,4 +1,3 @@
-// Test cases for Subscriptions module
 import { ExceptionCode } from "../../src/common/exception/exception-code";
 
 export interface SubscriptionTestCase {

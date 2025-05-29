@@ -1,6 +1,3 @@
-// filepath: d:\Code\ElectronReactApp\backend\test\contracts\contracts.test-cases.ts
-// Test cases for Contracts module
-
 import { ExceptionCode } from "../../src/common/exception/exception-code";
 
 export interface ContractTestCase {

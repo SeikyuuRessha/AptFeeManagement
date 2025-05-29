@@ -1,4 +1,3 @@
-// Test cases for Invoices module
 import { ExceptionCode } from "../../src/common/exception/exception-code";
 
 export interface InvoiceTestCase {

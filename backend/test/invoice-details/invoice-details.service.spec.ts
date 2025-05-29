@@ -1,9 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { InvoiceDetailsService } from "../../src/invoice-details/invoice-details.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
-import { ExceptionCode } from "../../src/common/exception/exception-code";
 import {
-    mockInvoiceDetails,
     setMockPrisma,
     getInvoiceDetailsTestCases,
     getInvoiceDetailTestCases,

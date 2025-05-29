@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { AuthService } from "../../src/auth/auth.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
-import { authTestCases, mockUsers, success, error } from "./auth.test-cases";
+import { authTestCases, error } from "./auth.test-cases";
 
 // Mock argon2
 jest.mock("argon2", () => ({

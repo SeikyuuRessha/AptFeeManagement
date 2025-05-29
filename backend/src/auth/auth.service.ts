@@ -86,7 +86,6 @@ export class AuthService {
             if (!user || !user.refreshToken) {
                 throw new AppException(ExceptionCode.ACCESS_DENIED);
             }
-
             const refreshTokenMatches = await verify(user.refreshToken, refreshToken);
             if (!refreshTokenMatches) {
                 throw new AppException(ExceptionCode.ACCESS_DENIED);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { handleService } from "../common/utils/handleService";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateInvoiceDetailDTO } from "./dtos/create-invoice-detail.dto";
@@ -6,6 +6,8 @@ import { UpdateInvoiceDetailDTO } from "./dtos/update-invoice-detail.dto";
 import { Invoice } from "@prisma/client";
 import { PaymentStatus } from "../common/enums";
 import calcNextBillingDate from "../common/utils/calcNextBillingDate";
+import { AppException } from "../common/exception/app-exception";
+import { ExceptionCode } from "../common/exception/exception-code";
 
 @Injectable()
 export class InvoiceDetailsService {
@@ -14,13 +16,14 @@ export class InvoiceDetailsService {
     async getInvoiceDetails() {
         return handleService(() => this.prisma.invoiceDetail.findMany());
     }
-
     async getInvoiceDetail(id: string) {
-        return handleService(() =>
-            this.prisma.invoiceDetail.findUnique({
-                where: { id },
-            })
-        );
+        return handleService(async () => {
+            const invoiceDetail = await this.prisma.invoiceDetail.findUnique({ where: { id } });
+            if (!invoiceDetail) {
+                throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
+            }
+            return invoiceDetail;
+        });
     }
 
     async createInvoiceDetail(data: CreateInvoiceDetailDTO) {
@@ -38,15 +41,15 @@ export class InvoiceDetailsService {
 
                 existingInvoice = result.data as Invoice;
             }
-
             const service = await this.prisma.service.findUnique({
                 where: {
                     id: data.serviceId,
                 },
             });
-
             if (!service) {
-                throw new NotFoundException("Service not found");
+                throw new AppException(ExceptionCode.SERVICE_NOT_FOUND, {
+                    serviceId: data.serviceId,
+                });
             }
 
             const newInvoiceDetail = await this.prisma.invoiceDetail.create({
@@ -86,7 +89,7 @@ export class InvoiceDetailsService {
             });
 
             if (!invoiceDetail) {
-                throw new NotFoundException("Invoice detail not found");
+                throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
             }
 
             const total = Number(invoiceDetail.service.unitPrice) * invoiceDetail.quantity;
@@ -118,7 +121,7 @@ export class InvoiceDetailsService {
             });
 
             if (!invoiceDetail) {
-                throw new NotFoundException("Invoice detail not found");
+                throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
             }
 
             await this.prisma.invoiceDetail.delete({
@@ -131,9 +134,10 @@ export class InvoiceDetailsService {
                     apartmentId: true,
                 },
             });
-
             if (!invoice) {
-                throw new NotFoundException("Invoice not found");
+                throw new AppException(ExceptionCode.INVOICE_NOT_FOUND, {
+                    invoiceId: invoiceDetail.invoiceId,
+                });
             }
 
             await this.recalculateInvoiceTotal(invoiceDetail.invoiceId);
@@ -161,7 +165,10 @@ export class InvoiceDetailsService {
             });
 
             if (!subscription) {
-                throw new Error("Subscription not found");
+                throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
+                    apartmentId,
+                    serviceId,
+                });
             }
 
             const newInvoice = await this.prisma.invoice.create({
@@ -206,7 +213,10 @@ export class InvoiceDetailsService {
             });
 
             if (!subscription) {
-                throw new Error("Subscription not found");
+                throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
+                    apartmentId,
+                    serviceId,
+                });
             }
 
             const date = calcNextBillingDate(subscription.frequency, subscription.nextBillingDate);

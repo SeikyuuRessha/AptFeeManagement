@@ -5,14 +5,24 @@ import { Injectable } from "@nestjs/common";
 import { CreateApartmentDTO } from "./dtos/create-apartment.dto";
 import { UpdateApartmentDTO } from "./dtos/update-apartment.dto";
 import { handleService } from "../common/utils/handleService";
+import { AppException } from "../common/exception/app-exception";
+import { ExceptionCode } from "../common/exception/exception-code";
 
 @Injectable()
 export class ApartmentsService {
     constructor(private readonly prisma: PrismaService) {}
 
     createApartment(data: CreateApartmentDTO, residentId: string) {
-        return handleService(() =>
-            this.prisma.apartment.create({
+        return handleService(async () => {
+            const resident = await this.prisma.resident.findUnique({
+                where: { id: residentId },
+            });
+
+            if (!resident) {
+                throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { residentId });
+            }
+
+            return this.prisma.apartment.create({
                 data: {
                     ...data,
                     residentId,
@@ -21,33 +31,45 @@ export class ApartmentsService {
                     building: true,
                     resident: true,
                 },
-            })
-        );
+            });
+        });
     }
 
     getApartments() {
         return handleService(() => this.prisma.apartment.findMany());
     }
 
-    async getApartment(id: string) {
-        return handleService(() =>
-            this.prisma.apartment.findUnique({
-                where: { id },
-            })
-        );
+    getApartment(id: string) {
+        return handleService(async () => {
+            const apartment = await this.prisma.apartment.findUnique({ where: { id } });
+            if (!apartment) {
+                throw new AppException(ExceptionCode.APARTMENT_NOT_FOUND, { id });
+            }
+            return apartment;
+        });
     }
 
-    async updateApartment(id: string, data: UpdateApartmentDTO) {
-        return handleService(() =>
-            this.prisma.apartment.update({
+    updateApartment(id: string, data: UpdateApartmentDTO) {
+        return handleService(async () => {
+            const apartment = await this.prisma.apartment.findUnique({ where: { id } });
+            if (!apartment) {
+                throw new AppException(ExceptionCode.NOT_FOUND, { id });
+            }
+            return this.prisma.apartment.update({
                 where: { id },
                 data,
                 select: { resident: true },
-            })
-        );
+            });
+        });
     }
 
-    async deleteApartment(id: string) {
-        return handleService(() => this.prisma.apartment.delete({ where: { id } }));
+    deleteApartment(id: string) {
+        return handleService(async () => {
+            const apartment = await this.prisma.apartment.findUnique({ where: { id } });
+            if (!apartment) {
+                throw new AppException(ExceptionCode.NOT_FOUND, { id });
+            }
+            return this.prisma.apartment.delete({ where: { id } });
+        });
     }
 }

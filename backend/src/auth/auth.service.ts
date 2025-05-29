@@ -1,13 +1,16 @@
 import { hash, verify } from "argon2";
 import { PrismaService } from "../prisma/prisma.service";
 
-import { ConflictException, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { LoginDTO } from "./dtos/login.dto";
 import { RegisterDTO } from "./dtos/register.dto";
 import { handleService } from "../common/utils/handleService";
+
+import { AppException } from "../common/exception/app-exception";
+import { ExceptionCode } from "../common/exception/exception-code";
 
 @Injectable()
 export class AuthService {
@@ -19,13 +22,12 @@ export class AuthService {
 
     register(data: RegisterDTO) {
         return handleService(async () => {
-            // Check if user exists
             const userExists = await this.prisma.resident.findUnique({
                 where: { email: data.email },
             });
 
             if (userExists) {
-                throw new ConflictException("User already exists!");
+                throw new AppException(ExceptionCode.USER_ALREADY_EXISTS);
             }
 
             // Hash password
@@ -51,18 +53,12 @@ export class AuthService {
                 where: { email: data.email },
             });
             if (!user) {
-                return {
-                    code: 0,
-                    msg: "User does not exist",
-                };
+                throw new AppException(ExceptionCode.USER_NOT_FOUND);
             }
 
             const passwordMatches = await verify(user.password, data.password);
             if (!passwordMatches) {
-                return {
-                    code: 0,
-                    msg: "Password is incorrect",
-                };
+                throw new AppException(ExceptionCode.INVALID_PASSWORD);
             }
 
             const tokens = await this.getTokens(user.id, user.email, user.role);
@@ -88,18 +84,12 @@ export class AuthService {
                 where: { id: userId },
             });
             if (!user || !user.refreshToken) {
-                return {
-                    code: 0,
-                    msg: "Access Denied",
-                };
+                throw new AppException(ExceptionCode.ACCESS_DENIED);
             }
 
             const refreshTokenMatches = await verify(user.refreshToken, refreshToken);
             if (!refreshTokenMatches) {
-                return {
-                    code: 0,
-                    msg: "Access Denied",
-                };
+                throw new AppException(ExceptionCode.ACCESS_DENIED);
             }
 
             const tokens = await this.getTokens(user.id, user.email, user.role);
@@ -113,8 +103,7 @@ export class AuthService {
         try {
             return await hash(data);
         } catch (error) {
-            // Handle or rethrow properly
-            throw new Error("Hashing failed: " + JSON.stringify(error));
+            throw new AppException(ExceptionCode.HASHING_FAILED, { error: JSON.stringify(error) });
         }
     }
 
@@ -152,7 +141,9 @@ export class AuthService {
                 refreshToken,
             };
         } catch (error) {
-            throw new InternalServerErrorException("Get tokens failed: " + JSON.stringify(error));
+            throw new AppException(ExceptionCode.INTERNAL_SERVER_ERROR, {
+                error: JSON.stringify(error),
+            });
         }
     }
 }

@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { handleService } from "../common/utils/handleService";
 import { PrismaService } from "../prisma/prisma.service";
 import { UpdateResidentDTO } from "./dtos/update-resident.dto";
+import { AppException } from "../common/exception/app-exception";
+import { ExceptionCode } from "../common/exception/exception-code";
 
 @Injectable()
 export class ResidentsService {
@@ -10,9 +12,14 @@ export class ResidentsService {
     async getResidents() {
         return handleService(() => this.prisma.resident.findMany());
     }
-
     async getResident(id: string) {
-        return handleService(() => this.prisma.resident.findUnique({ where: { id } }));
+        return handleService(async () => {
+            const resident = await this.prisma.resident.findUnique({ where: { id } });
+            if (!resident) {
+                throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { id });
+            }
+            return resident;
+        });
     }
 
     async search(query: string) {
@@ -28,12 +35,22 @@ export class ResidentsService {
             })
         );
     }
-
     async updateResident(id: string, data: UpdateResidentDTO) {
-        return handleService(() => this.prisma.resident.update({ where: { id }, data }));
+        return handleService(async () => {
+            const resident = await this.prisma.resident.findUnique({ where: { id } });
+            if (!resident) {
+                throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { id });
+            }
+            return this.prisma.resident.update({ where: { id }, data });
+        });
     }
-
     async deleteResident(id: string) {
-        return handleService(() => this.prisma.resident.delete({ where: { id } }));
+        return handleService(async () => {
+            const resident = await this.prisma.resident.findUnique({ where: { id } });
+            if (!resident) {
+                throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { id });
+            }
+            return this.prisma.resident.delete({ where: { id } });
+        });
     }
 }

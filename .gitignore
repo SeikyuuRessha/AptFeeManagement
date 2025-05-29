@@ -104,3 +104,4 @@ out/
 /backend/.prettierrc
 /backend/dist
 /backend/generated
+/backend/*.md

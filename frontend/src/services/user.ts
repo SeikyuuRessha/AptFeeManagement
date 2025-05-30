@@ -60,12 +60,14 @@ const register = async (payload: {
     email: string;
     password: string;
     fullName: string;
+    phone: string;
 }) => {
+    console.log("Registering user with payload:", payload);
     const res = (await api.post(
         "/auth/register",
         payload
     )) as IResponse<ITokens>;
-
+    console.log("Response from registration:", res);
     if (res.code === 0) throw new Error(res.msg);
 
     jwtManager.setTokens(res.data.accessToken, res.data.refreshToken);

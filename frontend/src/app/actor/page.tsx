@@ -1,3 +1,4 @@
+"use client"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import {
 	AppBar,
@@ -12,10 +13,10 @@ import {
 	Typography,
 } from '@mui/material'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRouter } from 'next/navigation'
 
 const Actor = () => {
-	const navigate = useNavigate()
+	const router = useRouter()
 
 	return (
 		<Box sx={{ background: '#fffaf0' }}>
@@ -52,53 +53,65 @@ const Actor = () => {
 					<List>
 						{/* Chỉnh sửa thông tin tài khoản */}
 						<ListItem
-							button
-							onClick={() => navigate('/edit-profile')}>
+							component='button'
+							onClick={() => router.push('/me/profile')}>
 							<ListItemText primary='Chỉnh sửa Thông tin tài khoản' />
 						</ListItem>
 
 						{/* Đổi mật khẩu */}
-						<ListItem button>
+						<ListItem component='button'
+							onClick={() => router.push('/edit-profile')}>
 							<ListItemText primary='Đổi mật khẩu' />
 						</ListItem>
 
 						{/* Thông tin căn hộ */}
-						<ListItem button>
+						<ListItem component='button'
+							onClick={() => router.push('/edit-profile')}>
 							<ListItemText primary='Thông tin căn hộ' />
 						</ListItem>
 
 						{/* Đơn khiếu nại */}
-						<ListItem button>
+						<ListItem component='button'
+							onClick={() => router.push('/edit-profile')}>
 							<ListItemText primary='Đơn khiếu nại' />
 						</ListItem>
 
 						{/* Hợp đồng */}
 						<ListItem
-							button
-							onClick={() => navigate('/contract')}>
+							component='button'
+							onClick={() => router.push('/contract')}>
 							<ListItemText primary='Hợp đồng' />
 						</ListItem>
 
 						{/* Góp ý */}
-						<ListItem button>
+						<ListItem component='button'
+							onClick={() => router.push('/edit-profile')}>
 							<ListItemText primary='Góp ý' />
 						</ListItem>
 						{/* Lịch sử thanh toán */}
+						{/* Thông báo */}
 						<ListItem
-							button
-							onClick={() => navigate('/transaction-history')}>
+							component='button'
+							onClick={() => router.push('/notifications')}>
+							<ListItemText primary='Thông báo' />
+						</ListItem>
+
+						<ListItem
+							component='button'
+							onClick={() => router.push('/payment')}>
 							<ListItemText primary='Lịch sử thanh toán' />
 						</ListItem>
 
 						{/* Cài đặt */}
 						<ListItem
-							button
-							onClick={() => navigate('/setting')}>
+							component='button'
+							onClick={() => router.push('/setting')}>
 							<ListItemText primary='Cài đặt' />
 						</ListItem>
 
 						{/* Xóa tài khoản */}
-						<ListItem button>
+						<ListItem component='button'
+							onClick={() => router.push('/edit-profile')}>
 							<ListItemText
 								primary='Xóa tài khoản'
 								sx={{ color: 'red' }}
@@ -107,8 +120,8 @@ const Actor = () => {
 
 						{/* Đăng xuất */}
 						<ListItem
-							button
-							onClick={() => navigate('/login')}>
+							component='button'
+							onClick={() => router.push('/login')}>
 							<ListItemText
 								primary='Đăng xuất'
 								sx={{ color: 'blue' }}

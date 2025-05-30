@@ -57,7 +57,7 @@ const ReportPage = () => {
 		<Container maxWidth="md" sx={{ textAlign: "center", py: 4 }}>
 			<Typography
 				variant="h4"
-				sx={{ fontWeight: "bold", color: "blue", mb: 3 }}
+				sx={{ fontWeight: "bold", color: "green", mb: 3 }}
 			>
 				Báo Cáo Tài Chính và Dịch Vụ Của Tôi
 			</Typography>

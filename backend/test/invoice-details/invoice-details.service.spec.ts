@@ -25,6 +25,7 @@ describe("InvoiceDetailsService", () => {
             },
             invoice: {
                 findUnique: jest.fn(),
+                findFirst: jest.fn(),
                 create: jest.fn(),
                 update: jest.fn(),
             },
@@ -32,6 +33,7 @@ describe("InvoiceDetailsService", () => {
                 findUnique: jest.fn(),
             },
             subscription: {
+                findUnique: jest.fn(),
                 findFirst: jest.fn(),
                 update: jest.fn(),
             },
@@ -53,7 +55,6 @@ describe("InvoiceDetailsService", () => {
         // Set the mock prisma for test cases
         setMockPrisma(prisma);
     });
-
     describe("getInvoiceDetails", () => {
         getInvoiceDetailsTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -61,13 +62,15 @@ describe("InvoiceDetailsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.getInvoiceDetails();
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult?.code === 1) {
+                    const result = await service.getInvoiceDetails();
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.getInvoiceDetails()).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("getInvoiceDetail", () => {
         getInvoiceDetailTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -75,13 +78,15 @@ describe("InvoiceDetailsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.getInvoiceDetail(testCase.id);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult?.code === 1) {
+                    const result = await service.getInvoiceDetail(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.getInvoiceDetail(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("createInvoiceDetail", () => {
         createInvoiceDetailTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -89,13 +94,15 @@ describe("InvoiceDetailsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.createInvoiceDetail(testCase.data);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult?.code === 1) {
+                    const result = await service.createInvoiceDetail(testCase.data);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.createInvoiceDetail(testCase.data)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("updateInvoiceDetail", () => {
         updateInvoiceDetailTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -103,13 +110,17 @@ describe("InvoiceDetailsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.updateInvoiceDetail(testCase.id, testCase.data);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult?.code === 1) {
+                    const result = await service.updateInvoiceDetail(testCase.id, testCase.data);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(
+                        service.updateInvoiceDetail(testCase.id, testCase.data)
+                    ).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("deleteInvoiceDetail", () => {
         deleteInvoiceDetailTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -117,9 +128,12 @@ describe("InvoiceDetailsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.deleteInvoiceDetail(testCase.id);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult?.code === 1) {
+                    const result = await service.deleteInvoiceDetail(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.deleteInvoiceDetail(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });

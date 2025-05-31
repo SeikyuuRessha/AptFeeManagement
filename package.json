@@ -20,13 +20,13 @@
         "start-frontend": "cd frontend && npm run dev",
         "start-backend": "cd backend && npm run start:dev",
         "start-electron": "npx electronmon --trace-warnings .",
-        
         "generate": "cd backend && npx prisma generate",
         "migrate": "cd backend && npx prisma migrate dev --name init",
-        "reset" : "cd backend && npx prisma migrate reset --force"
+        "reset": "cd backend && npx prisma migrate reset --force"
     },
     "dependencies": {
-       
+        "electron": "^34.2.0",
+        "electron-squirrel-startup": "^1.0.1"
     },
     "devDependencies": {
         "concurrently": "^9.1.2",

@@ -1,16 +1,17 @@
-import { IsNumber, IsPositive, IsUUID } from 'class-validator';
+import { IsNumber, IsPositive, IsUUID, IsOptional } from "class-validator";
 
 export class CreateInvoiceDetailDTO {
-  @IsNumber()
-  @IsPositive()
-  quantity: number;
+    @IsNumber()
+    @IsPositive()
+    quantity: number;
 
-  @IsUUID()
-  serviceId: string;
+    @IsUUID()
+    @IsOptional()
+    invoiceId?: string;
 
-  @IsUUID()
-  invoiceId: string;
+    @IsUUID()
+    apartmentId: string;
 
-  @IsUUID()
-  apartmentId: string;
+    @IsUUID()
+    subscriptionId: string;
 }

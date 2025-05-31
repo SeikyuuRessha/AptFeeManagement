@@ -1,4 +1,5 @@
 import { ExceptionCode } from "../../src/common/exception/exception-code";
+import { AppException } from "../../src/common/exception/app-exception";
 
 // Mock Data
 export const mockBuildings = [
@@ -73,6 +74,7 @@ export interface ErrorTestCase {
     input?: any;
     mockSetup: (prisma: any) => void;
     expectedError: any;
+    shouldThrow?: boolean;
 }
 
 // Test Cases Configuration
@@ -179,7 +181,6 @@ export const buildingTestCases = {
         },
         // ADD NEW GET BY ID TEST CASES HERE
     ] as GetByIdTestCase[],
-
     errors: [
         {
             name: "should throw BUILDING_NOT_FOUND when getting non-existent building",
@@ -189,6 +190,7 @@ export const buildingTestCases = {
                 (prisma.building.findUnique as jest.Mock).mockResolvedValue(null);
             },
             expectedError: ExceptionCode.BUILDING_NOT_FOUND,
+            shouldThrow: true,
         },
         {
             name: "should throw BUILDING_NOT_FOUND when updating non-existent building",
@@ -199,6 +201,7 @@ export const buildingTestCases = {
                 (prisma.building.findUnique as jest.Mock).mockResolvedValue(null);
             },
             expectedError: ExceptionCode.BUILDING_NOT_FOUND,
+            shouldThrow: true,
         },
         {
             name: "should throw BUILDING_NOT_FOUND when deleting non-existent building",
@@ -208,6 +211,7 @@ export const buildingTestCases = {
                 (prisma.building.findUnique as jest.Mock).mockResolvedValue(null);
             },
             expectedError: ExceptionCode.BUILDING_NOT_FOUND,
+            shouldThrow: true,
         },
         // ADD NEW ERROR TEST CASES HERE
     ] as ErrorTestCase[],

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PaymentsService } from "../../src/payments/payments.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
+import { AppException } from "../../src/common/exception/app-exception";
 import {
     setMockPrisma,
     getPaymentsTestCases,
@@ -38,43 +39,52 @@ describe("PaymentsService", () => {
         prisma = module.get<PrismaService>(PrismaService);
         setMockPrisma(prisma);
     });
-
     describe("getPayments", () => {
         getPaymentsTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
                 testCase.mockSetup?.();
 
-                const result = await service.getPayments();
-
-                expect(result).toEqual(testCase.expectedResult);
-                expect(prisma.payment.findMany).toHaveBeenCalledTimes(1);
+                if (testCase.shouldThrow) {
+                    await expect(service.getPayments()).rejects.toThrow(AppException);
+                    expect(prisma.payment.findMany).toHaveBeenCalledTimes(1);
+                } else {
+                    const result = await service.getPayments();
+                    expect(result).toEqual(testCase.expectedResult);
+                    expect(prisma.payment.findMany).toHaveBeenCalledTimes(1);
+                }
             });
         });
     });
-
     describe("getPayment", () => {
         getPaymentTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
                 testCase.mockSetup?.();
 
-                const result = await service.getPayment(testCase.id);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.shouldThrow) {
+                    await expect(service.getPayment(testCase.id)).rejects.toThrow(AppException);
+                } else {
+                    const result = await service.getPayment(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                }
                 expect(prisma.payment.findUnique).toHaveBeenCalledWith({
                     where: { id: testCase.id },
                 });
             });
         });
     });
-
     describe("createPayment", () => {
         createPaymentTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
                 testCase.mockSetup?.();
 
-                const result = await service.createPayment(testCase.data);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.shouldThrow) {
+                    await expect(service.createPayment(testCase.data)).rejects.toThrow(
+                        AppException
+                    );
+                } else {
+                    const result = await service.createPayment(testCase.data);
+                    expect(result).toEqual(testCase.expectedResult);
+                }
                 expect(prisma.invoice.findUnique).toHaveBeenCalledWith({
                     where: { id: testCase.data.invoiceId },
                 });

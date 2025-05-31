@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ServicesService } from "../../src/services/services.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
+import { AppException } from "../../src/common/exception/app-exception";
 import {
     setMockPrisma,
     getServicesTestCases,
@@ -62,9 +63,12 @@ describe("ServicesService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.getService(testCase.id);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.shouldThrow) {
+                    await expect(service.getService(testCase.id)).rejects.toThrow(AppException);
+                } else {
+                    const result = await service.getService(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                }
             });
         });
     });
@@ -88,9 +92,14 @@ describe("ServicesService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.updateService(testCase.id, testCase.data);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.shouldThrow) {
+                    await expect(service.updateService(testCase.id, testCase.data)).rejects.toThrow(
+                        AppException
+                    );
+                } else {
+                    const result = await service.updateService(testCase.id, testCase.data);
+                    expect(result).toEqual(testCase.expectedResult);
+                }
             });
         });
     });
@@ -101,9 +110,12 @@ describe("ServicesService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.deleteService(testCase.id);
-
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.shouldThrow) {
+                    await expect(service.deleteService(testCase.id)).rejects.toThrow(AppException);
+                } else {
+                    const result = await service.deleteService(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                }
             });
         });
     });

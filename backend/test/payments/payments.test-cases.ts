@@ -1,13 +1,16 @@
 import { ExceptionCode } from "../../src/common/exception/exception-code";
+import { AppException } from "../../src/common/exception/app-exception";
 
 export interface PaymentTestCase {
     description: string;
     mockSetup?: () => void;
-    expectedResult: {
+    expectedResult?: {
         code: number;
         msg: string;
         data?: any;
     };
+    shouldThrow?: boolean;
+    expectedError?: AppException;
 }
 
 export interface GetPaymentTestCase extends PaymentTestCase {
@@ -83,10 +86,8 @@ export const getPaymentsTestCases: PaymentTestCase[] = [
     },
     {
         description: "should handle database error",
-        expectedResult: error(
-            ExceptionCode.INTERNAL_SERVER_ERROR.code,
-            ExceptionCode.INTERNAL_SERVER_ERROR.msg
-        ),
+        shouldThrow: true,
+        expectedError: new AppException(ExceptionCode.INTERNAL_SERVER_ERROR),
         mockSetup: () => {
             mockPrisma.payment.findMany.mockRejectedValue(new Error("Database error"));
         },
@@ -106,11 +107,8 @@ export const getPaymentTestCases: GetPaymentTestCase[] = [
     {
         description: "should return error when payment does not exist",
         id: "non-existent-id",
-        expectedResult: error(
-            ExceptionCode.PAYMENT_NOT_FOUND.code,
-            ExceptionCode.PAYMENT_NOT_FOUND.msg,
-            { id: "non-existent-id" }
-        ),
+        shouldThrow: true,
+        expectedError: new AppException(ExceptionCode.PAYMENT_NOT_FOUND, { id: "non-existent-id" }),
         mockSetup: () => {
             mockPrisma.payment.findUnique.mockResolvedValue(null);
         },
@@ -118,10 +116,8 @@ export const getPaymentTestCases: GetPaymentTestCase[] = [
     {
         description: "should handle database error during get",
         id: "payment-1",
-        expectedResult: error(
-            ExceptionCode.INTERNAL_SERVER_ERROR.code,
-            ExceptionCode.INTERNAL_SERVER_ERROR.msg
-        ),
+        shouldThrow: true,
+        expectedError: new AppException(ExceptionCode.INTERNAL_SERVER_ERROR),
         mockSetup: () => {
             mockPrisma.payment.findUnique.mockRejectedValue(new Error("Database error"));
         },
@@ -198,11 +194,10 @@ export const createPaymentTestCases: CreatePaymentTestCase[] = [
             status: "PENDING",
             invoiceId: "non-existent-invoice",
         },
-        expectedResult: error(
-            ExceptionCode.INVOICE_NOT_FOUND.code,
-            ExceptionCode.INVOICE_NOT_FOUND.msg,
-            { invoiceId: "non-existent-invoice" }
-        ),
+        shouldThrow: true,
+        expectedError: new AppException(ExceptionCode.INVOICE_NOT_FOUND, {
+            invoiceId: "non-existent-invoice",
+        }),
         mockSetup: () => {
             mockPrisma.invoice.findUnique.mockResolvedValue(null);
         },
@@ -215,10 +210,8 @@ export const createPaymentTestCases: CreatePaymentTestCase[] = [
             status: "PENDING",
             invoiceId: "invoice-1",
         },
-        expectedResult: error(
-            ExceptionCode.INTERNAL_SERVER_ERROR.code,
-            ExceptionCode.INTERNAL_SERVER_ERROR.msg
-        ),
+        shouldThrow: true,
+        expectedError: new AppException(ExceptionCode.INTERNAL_SERVER_ERROR),
         mockSetup: () => {
             mockPrisma.invoice.findUnique.mockResolvedValue(mockInvoice);
             mockPrisma.payment.create.mockRejectedValue(new Error("Database error"));

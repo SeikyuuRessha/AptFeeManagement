@@ -15,17 +15,9 @@ export async function handleService<T>(
         };
     } catch (error) {
         if (error instanceof AppException) {
-            return {
-                code: error.code,
-                msg: error.msg,
-                data: error.data || null,
-            };
+            throw error;
         }
 
-        return {
-            code: fallbackError.code,
-            msg: fallbackError.msg,
-            data: null,
-        };
+        throw new AppException(fallbackError, { originalError: error?.toString() });
     }
 }

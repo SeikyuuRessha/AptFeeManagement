@@ -4,7 +4,6 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateInvoiceDetailDTO } from "./dtos/create-invoice-detail.dto";
 import { UpdateInvoiceDetailDTO } from "./dtos/update-invoice-detail.dto";
 import { Invoice } from "@prisma/client";
-import { PaymentStatus } from "../common/enums";
 import calcNextBillingDate from "../common/utils/calcNextBillingDate";
 import { AppException } from "../common/exception/app-exception";
 import { ExceptionCode } from "../common/exception/exception-code";
@@ -12,9 +11,18 @@ import { ExceptionCode } from "../common/exception/exception-code";
 @Injectable()
 export class InvoiceDetailsService {
     constructor(private readonly prisma: PrismaService) {}
-
     async getInvoiceDetails() {
-        return handleService(() => this.prisma.invoiceDetail.findMany());
+        return handleService(() =>
+            this.prisma.invoiceDetail.findMany({
+                include: {
+                    subscription: {
+                        include: {
+                            service: true,
+                        },
+                    },
+                },
+            })
+        );
     }
     async getInvoiceDetail(id: string) {
         return handleService(async () => {
@@ -25,74 +33,121 @@ export class InvoiceDetailsService {
             return invoiceDetail;
         });
     }
-
     async createInvoiceDetail(data: CreateInvoiceDetailDTO) {
         return handleService(async () => {
-            let existingInvoice: Invoice | null = null;
+            let targetInvoice: Invoice | null = null;
 
-            existingInvoice = await this.prisma.invoice.findUnique({
-                where: {
-                    id: data.invoiceId,
-                },
-            });
-
-            if (!existingInvoice) {
-                const result = await this.createPendingInvoice(data.apartmentId, data.serviceId);
-
-                existingInvoice = result.data as Invoice;
-            }
-            const service = await this.prisma.service.findUnique({
-                where: {
-                    id: data.serviceId,
-                },
-            });
-            if (!service) {
-                throw new AppException(ExceptionCode.SERVICE_NOT_FOUND, {
-                    serviceId: data.serviceId,
+            if (data.invoiceId) {
+                targetInvoice = await this.prisma.invoice.findUnique({
+                    where: { id: data.invoiceId },
                 });
+
+                if (!targetInvoice)
+                    throw new AppException(ExceptionCode.INVOICE_NOT_FOUND, {
+                        invoiceId: data.invoiceId,
+                    });
+            } else {
+                // Get subscription to determine next billing date
+                const subscription = await this.prisma.subscription.findUnique({
+                    where: { id: data.subscriptionId },
+                    select: {
+                        nextBillingDate: true,
+                        apartmentId: true,
+                        service: {
+                            select: { id: true },
+                        },
+                    },
+                });
+
+                if (!subscription)
+                    throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
+                        subscriptionId: data.subscriptionId,
+                    });
+
+                if (subscription.apartmentId !== data.apartmentId)
+                    throw new AppException(ExceptionCode.SUBSCRIPTION_MISMATCH, {
+                        subscriptionId: data.subscriptionId,
+                        apartmentId: data.apartmentId,
+                        serviceId: subscription.service.id,
+                    });
+
+                // Look for existing invoice for this apartment and next billing month
+                const nextBillingDate = new Date(subscription.nextBillingDate);
+                const startOfMonth = new Date(nextBillingDate.getFullYear(), nextBillingDate.getMonth(), 1);
+                const endOfMonth = new Date(
+                    nextBillingDate.getFullYear(),
+                    nextBillingDate.getMonth() + 1,
+                    0,
+                    23,
+                    59,
+                    59
+                );
+
+                targetInvoice = await this.prisma.invoice.findFirst({
+                    where: {
+                        apartmentId: data.apartmentId,
+                        dueDate: {
+                            gte: startOfMonth,
+                            lte: endOfMonth,
+                        },
+                        status: "PENDING",
+                    },
+                });
+
+                // If no existing invoice found, create a new one
+                if (!targetInvoice) {
+                    const result = await this.createPendingInvoice(data.apartmentId, subscription.service.id);
+                    targetInvoice = result.data as Invoice;
+                }
             }
+
+            // Get service information through subscription
+            const subscription = await this.prisma.subscription.findUnique({
+                where: { id: data.subscriptionId },
+                include: { service: true },
+            });
+
+            if (!subscription)
+                throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
+                    subscriptionId: data.subscriptionId,
+                });
 
             const newInvoiceDetail = await this.prisma.invoiceDetail.create({
                 data: {
                     quantity: data.quantity,
-                    total: Number(service.unitPrice) * data.quantity || 0,
-                    serviceId: data.serviceId,
-                    invoiceId: data.invoiceId,
+                    total: data.quantity ? Number(subscription.service.unitPrice) * data.quantity : 0,
+                    invoiceId: targetInvoice.id,
+                    subscriptionId: data.subscriptionId,
                 },
             });
 
-            await this.recalculateInvoiceTotal(existingInvoice.id);
-
-            await this.updateSubscriptionNextBillingDate(data.apartmentId, data.serviceId);
+            await this.recalculateInvoiceTotal(targetInvoice.id);
+            await this.updateSubscriptionNextBillingDate(data.apartmentId, subscription.service.id);
 
             return newInvoiceDetail;
         });
     }
-
     async updateInvoiceDetail(id: string, data: UpdateInvoiceDetailDTO) {
         return handleService(async () => {
             const invoiceDetail = await this.prisma.invoiceDetail.findUnique({
                 where: { id },
-                select: {
-                    quantity: true,
+                include: {
+                    subscription: {
+                        include: { service: true },
+                    },
                     invoice: {
                         select: {
                             id: true,
                             apartmentId: true,
                         },
                     },
-                    service: {
-                        select: { unitPrice: true, id: true },
-                    },
-                    serviceId: true,
                 },
             });
 
-            if (!invoiceDetail) {
-                throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
-            }
+            if (!invoiceDetail) throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
 
-            const total = Number(invoiceDetail.service.unitPrice) * invoiceDetail.quantity;
+            const newQuantity = data.quantity || invoiceDetail.quantity;
+            const total = Number(invoiceDetail.subscription.service.unitPrice) * newQuantity;
 
             const updatedInvoiceDetail = await this.prisma.invoiceDetail.update({
                 where: { id },
@@ -103,26 +158,26 @@ export class InvoiceDetailsService {
             });
 
             await this.recalculateInvoiceTotal(invoiceDetail.invoice.id);
-
             await this.updateSubscriptionNextBillingDate(
-                invoiceDetail.invoice.id,
-                invoiceDetail.serviceId
+                invoiceDetail.invoice.apartmentId,
+                invoiceDetail.subscription.service.id
             );
 
             return updatedInvoiceDetail;
         });
     }
-
     async deleteInvoiceDetail(id: string) {
         return handleService(async () => {
             const invoiceDetail = await this.prisma.invoiceDetail.findUnique({
                 where: { id },
-                select: { serviceId: true, invoiceId: true },
+                include: {
+                    subscription: {
+                        include: { service: true },
+                    },
+                },
             });
 
-            if (!invoiceDetail) {
-                throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
-            }
+            if (!invoiceDetail) throw new AppException(ExceptionCode.INVOICE_DETAIL_NOT_FOUND, { id });
 
             await this.prisma.invoiceDetail.delete({
                 where: { id },
@@ -134,18 +189,14 @@ export class InvoiceDetailsService {
                     apartmentId: true,
                 },
             });
-            if (!invoice) {
+
+            if (!invoice)
                 throw new AppException(ExceptionCode.INVOICE_NOT_FOUND, {
                     invoiceId: invoiceDetail.invoiceId,
                 });
-            }
 
             await this.recalculateInvoiceTotal(invoiceDetail.invoiceId);
-
-            await this.updateSubscriptionNextBillingDate(
-                invoice.apartmentId,
-                invoiceDetail.serviceId
-            );
+            await this.updateSubscriptionNextBillingDate(invoice.apartmentId, invoiceDetail.subscription.service.id);
 
             return invoiceDetail;
         });
@@ -164,12 +215,11 @@ export class InvoiceDetailsService {
                 },
             });
 
-            if (!subscription) {
+            if (!subscription)
                 throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
                     apartmentId,
                     serviceId,
                 });
-            }
 
             const newInvoice = await this.prisma.invoice.create({
                 data: {
@@ -191,10 +241,7 @@ export class InvoiceDetailsService {
                 select: { quantity: true, total: true },
             });
 
-            const totalAmount = invoiceDetails.reduce(
-                (acc, detail) => acc + Number(detail.total),
-                0
-            );
+            const totalAmount = invoiceDetails.reduce((acc, detail) => acc + Number(detail.total), 0);
 
             await this.prisma.invoice.update({
                 where: { id: invoiceId },
@@ -212,12 +259,11 @@ export class InvoiceDetailsService {
                 },
             });
 
-            if (!subscription) {
+            if (!subscription)
                 throw new AppException(ExceptionCode.SUBSCRIPTION_NOT_FOUND, {
                     apartmentId,
                     serviceId,
                 });
-            }
 
             const date = calcNextBillingDate(subscription.frequency, subscription.nextBillingDate);
 

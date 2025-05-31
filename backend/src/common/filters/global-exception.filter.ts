@@ -1,9 +1,18 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
+import {
+    ExceptionFilter,
+    Catch,
+    ArgumentsHost,
+    HttpException,
+    HttpStatus,
+    Logger,
+} from "@nestjs/common";
 import { Response } from "express";
 import { AppException } from "../exception/app-exception";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+    private readonly logger = new Logger(GlobalExceptionFilter.name);
+
     catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
@@ -31,6 +40,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 data: null,
             };
         } else {
+            // Log the full error details for debugging
+            this.logger.error("Unhandled exception:", exception);
             responseBody = {
                 code: 0,
                 msg: "Internal server error",

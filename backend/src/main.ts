@@ -5,6 +5,11 @@ import { AppModule } from "./app.module";
 import { CustomValidationPipe } from "./common/pipes/custom-validation.pipe";
 import { GlobalExceptionFilter } from "./common/filters/global-exception.filter";
 
+// Fix BigInt serialization issue
+(BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+};
+
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { cors: true });
     app.useGlobalPipes(

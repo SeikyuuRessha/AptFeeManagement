@@ -21,6 +21,7 @@ export const ExceptionCode = {
     SUBSCRIPTION_NOT_FOUND: { code: 2009, msg: "Subscription not found" },
     NOTIFICATION_NOT_FOUND: { code: 2010, msg: "Notification not found" },
     INVOICE_DETAIL_NOT_FOUND: { code: 2011, msg: "Invoice detail not found" },
+    SUBSCRIPTION_MISMATCH: { code: 2012, msg: "Subscription does not match apartment and service" },
 
     INVALID_PASSWORD: { code: 1008, msg: "Password is incorrect" },
     ACCESS_DENIED: { code: 1009, msg: "Access denied" },

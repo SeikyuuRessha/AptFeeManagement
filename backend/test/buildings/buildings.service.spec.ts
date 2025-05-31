@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { BuildingsService } from "../../src/buildings/buildings.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
 import { buildingTestCases, mockBuildings, success, error } from "./buildings.test-cases";
+import { AppException } from "../../src/common/exception/app-exception";
 
 describe("BuildingsService", () => {
     let service: BuildingsService;
@@ -82,10 +83,9 @@ describe("BuildingsService", () => {
             });
         });
     });
-
     describe("Error Handling", () => {
         buildingTestCases.errors.forEach(
-            ({ name, operation, id, input, mockSetup, expectedError }) => {
+            ({ name, operation, id, input, mockSetup, expectedError, shouldThrow }) => {
                 it(name, async () => {
                     mockSetup(prisma);
                     let promise: Promise<any>;
@@ -106,8 +106,12 @@ describe("BuildingsService", () => {
                             throw new Error(`Unknown operation: ${operation}`);
                     }
 
-                    const result = await promise;
-                    expect(result).toEqual(error(expectedError, { id }));
+                    if (shouldThrow) {
+                        await expect(promise).rejects.toThrow(AppException);
+                    } else {
+                        const result = await promise;
+                        expect(result).toEqual(error(expectedError, { id }));
+                    }
                 });
             }
         );

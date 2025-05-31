@@ -1,0 +1,48 @@
+import api from "@/config/api";
+import { IResponse } from "./service";
+
+export interface Building {
+    id: string;
+    name: string;
+    address: string;
+    numberOfFloors: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Apartment {
+    id: string;
+    number: string;
+    floor: number;
+    buildingId: string;
+    residentId?: string;
+    building?: Building;
+    resident?: {
+        id: string;
+        fullName: string;
+        email: string;
+        phone?: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export const getBuildings = async (): Promise<Building[]> => {
+    const res = (await api.get("/buildings")) as IResponse<Building[]>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
+};
+
+export const getApartments = async (): Promise<Apartment[]> => {
+    const res = (await api.get("/apartments")) as IResponse<Apartment[]>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
+};

@@ -13,9 +13,9 @@ export interface InvoiceDetailTestCase {
 export interface CreateInvoiceDetailTestCase extends InvoiceDetailTestCase {
     data: {
         quantity: number;
-        serviceId: string;
-        invoiceId: string;
+        invoiceId?: string;
         apartmentId: string;
+        subscriptionId: string;
     };
 }
 
@@ -40,8 +40,8 @@ export const mockInvoiceDetails = [
         id: "detail-1",
         quantity: 2,
         total: 200000,
-        serviceId: "service-1",
         invoiceId: "invoice-1",
+        subscriptionId: "sub-1",
         createdAt: new Date("2023-12-01"),
         updatedAt: new Date("2023-12-01"),
     },
@@ -49,8 +49,8 @@ export const mockInvoiceDetails = [
         id: "detail-2",
         quantity: 1,
         total: 100000,
-        serviceId: "service-2",
         invoiceId: "invoice-1",
+        subscriptionId: "sub-2",
         createdAt: new Date("2023-12-01"),
         updatedAt: new Date("2023-12-01"),
     },
@@ -77,6 +77,7 @@ export const mockSubscription = {
     frequency: "MONTHLY",
     apartmentId: "apt-1",
     serviceId: "service-1",
+    service: mockService,
 };
 
 // Helper functions
@@ -147,26 +148,26 @@ export const createInvoiceDetailTestCases: CreateInvoiceDetailTestCase[] = [
         description: "should create invoice detail successfully with existing invoice",
         data: {
             quantity: 3,
-            serviceId: "service-1",
             invoiceId: "invoice-1",
             apartmentId: "apt-1",
+            subscriptionId: "sub-1",
         },
         expectedResult: success({
             id: "new-detail-id",
             quantity: 3,
             total: 300000,
-            serviceId: "service-1",
             invoiceId: "invoice-1",
+            subscriptionId: "sub-1",
         }),
         mockSetup: () => {
             mockPrisma.invoice.findUnique.mockResolvedValue(mockInvoice);
-            mockPrisma.service.findUnique.mockResolvedValue(mockService);
+            mockPrisma.subscription.findUnique.mockResolvedValueOnce(mockSubscription);
             mockPrisma.invoiceDetail.create.mockResolvedValue({
                 id: "new-detail-id",
                 quantity: 3,
                 total: 300000,
-                serviceId: "service-1",
                 invoiceId: "invoice-1",
+                subscriptionId: "sub-1",
             });
             mockPrisma.invoiceDetail.findMany.mockResolvedValue([]);
             mockPrisma.invoice.update.mockResolvedValue(mockInvoice);
@@ -175,21 +176,21 @@ export const createInvoiceDetailTestCases: CreateInvoiceDetailTestCase[] = [
         },
     },
     {
-        description: "should return error when service not found",
+        description: "should return error when subscription not found",
         data: {
             quantity: 2,
-            serviceId: "non-existent-service",
             invoiceId: "invoice-1",
             apartmentId: "apt-1",
+            subscriptionId: "non-existent-subscription",
         },
         expectedResult: error(
-            ExceptionCode.SERVICE_NOT_FOUND.code,
-            ExceptionCode.SERVICE_NOT_FOUND.msg,
-            { serviceId: "non-existent-service" }
+            ExceptionCode.SUBSCRIPTION_NOT_FOUND.code,
+            ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg,
+            { subscriptionId: "non-existent-subscription" }
         ),
         mockSetup: () => {
             mockPrisma.invoice.findUnique.mockResolvedValue(mockInvoice);
-            mockPrisma.service.findUnique.mockResolvedValue(null);
+            mockPrisma.subscription.findUnique.mockResolvedValue(null);
         },
     },
 ];
@@ -210,9 +211,10 @@ export const updateInvoiceDetailTestCases: UpdateInvoiceDetailTestCase[] = [
         mockSetup: () => {
             const mockDetailWithRelations = {
                 quantity: 2,
+                subscription: {
+                    service: { unitPrice: 100000, id: "service-1" },
+                },
                 invoice: { id: "invoice-1", apartmentId: "apt-1" },
-                service: { unitPrice: 100000, id: "service-1" },
-                serviceId: "service-1",
             };
             mockPrisma.invoiceDetail.findUnique.mockResolvedValue(mockDetailWithRelations);
             mockPrisma.invoiceDetail.update.mockResolvedValue({
@@ -249,13 +251,19 @@ export const deleteInvoiceDetailTestCases: DeleteInvoiceDetailTestCase[] = [
         description: "should delete invoice detail successfully when detail exists",
         id: "detail-1",
         expectedResult: success({
-            serviceId: "service-1",
+            subscriptionId: "sub-1",
             invoiceId: "invoice-1",
+            subscription: {
+                service: { id: "service-1" },
+            },
         }),
         mockSetup: () => {
             mockPrisma.invoiceDetail.findUnique.mockResolvedValue({
-                serviceId: "service-1",
+                subscriptionId: "sub-1",
                 invoiceId: "invoice-1",
+                subscription: {
+                    service: { id: "service-1" },
+                },
             });
             mockPrisma.invoiceDetail.delete.mockResolvedValue(mockInvoiceDetails[0]);
             mockPrisma.invoice.findUnique.mockResolvedValue(mockInvoice);

@@ -3,7 +3,9 @@ import { ExceptionCode } from "../../src/common/exception/exception-code";
 export interface ServiceTestCase {
     description: string;
     mockSetup?: () => void;
-    expectedResult: {
+    shouldThrow?: boolean;
+    expectedError?: any;
+    expectedResult?: {
         code: number;
         msg: string;
         data?: any;
@@ -96,11 +98,8 @@ export const getServiceTestCases: GetServiceTestCase[] = [
     {
         description: "should return error when service does not exist",
         id: "non-existent-id",
-        expectedResult: error(
-            ExceptionCode.SERVICE_NOT_FOUND.code,
-            ExceptionCode.SERVICE_NOT_FOUND.msg,
-            { id: "non-existent-id" }
-        ),
+        shouldThrow: true,
+        expectedError: ExceptionCode.SERVICE_NOT_FOUND,
         mockSetup: () => {
             mockPrisma.service.findUnique.mockResolvedValue(null);
         },
@@ -194,11 +193,8 @@ export const updateServiceTestCases: UpdateServiceTestCase[] = [
         data: {
             unitPrice: 150.0,
         },
-        expectedResult: error(
-            ExceptionCode.SERVICE_NOT_FOUND.code,
-            ExceptionCode.SERVICE_NOT_FOUND.msg,
-            { id: "non-existent-id" }
-        ),
+        shouldThrow: true,
+        expectedError: ExceptionCode.SERVICE_NOT_FOUND,
         mockSetup: () => {
             mockPrisma.service.findUnique.mockResolvedValue(null);
         },
@@ -219,11 +215,8 @@ export const deleteServiceTestCases: DeleteServiceTestCase[] = [
     {
         description: "should throw SERVICE_NOT_FOUND when service does not exist",
         id: "non-existent-id",
-        expectedResult: error(
-            ExceptionCode.SERVICE_NOT_FOUND.code,
-            ExceptionCode.SERVICE_NOT_FOUND.msg,
-            { id: "non-existent-id" }
-        ),
+        shouldThrow: true,
+        expectedError: ExceptionCode.SERVICE_NOT_FOUND,
         mockSetup: () => {
             mockPrisma.service.findUnique.mockResolvedValue(null);
         },

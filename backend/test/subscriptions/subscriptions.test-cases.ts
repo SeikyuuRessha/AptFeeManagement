@@ -1,13 +1,16 @@
 import { ExceptionCode } from "../../src/common/exception/exception-code";
+import { AppException } from "../../src/common/exception/app-exception";
 
 export interface SubscriptionTestCase {
     description: string;
     mockSetup?: () => void;
-    expectedResult: {
+    expectedResult?: {
         code: number;
         msg: string;
         data?: any;
     };
+    shouldThrow?: boolean;
+    expectedError?: AppException;
 }
 
 export interface CreateSubscriptionTestCase extends SubscriptionTestCase {

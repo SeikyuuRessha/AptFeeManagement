@@ -11,14 +11,14 @@ import { ExceptionCode } from "../common/exception/exception-code";
 @Injectable()
 export class ApartmentsService {
     constructor(private readonly prisma: PrismaService) {}
-    createApartment(data: CreateApartmentDTO, residentId: string) {
+    createApartment(data: CreateApartmentDTO) {
         return handleService(async () => {
             return this.prisma.apartment.create({
                 data: {
                     ...data,
-                    residentId: "",
+                    residentId: null,
                 },
-                include: {
+                select: {
                     building: true,
                     resident: true,
                 },

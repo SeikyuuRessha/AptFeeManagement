@@ -1,14 +1,14 @@
 {
-    "name": "electronreactapp",
+    "name": "Quản lý thu phí chung cư",
     "version": "0.0.1",
     "description": "",
-    "homepage": "https://github.com/hieudo2808/ElectronApp#readme",
+    "homepage": "https://github.com/SeikyuuRessha/AptFeeManagement#readme",
     "bugs": {
-        "url": "https://github.com/hieudo2808/ElectronApp/issues"
+        "url": "https://github.com/SeikyuuRessha/AptFeeManagement/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/hieudo2808/ElectronApp.git"
+        "url": "git+https://github.com/SeikyuuRessha/AptFeeManagement.git"
     },
     "license": "ISC",
     "author": "",
@@ -16,7 +16,7 @@
     "main": "./main.js",
     "scripts": {
         "realStart": "electron .",
-        "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
+        "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\" \"npm run start-electron\"",
         "start-frontend": "cd frontend && npm run dev",
         "start-backend": "cd backend && npm run start:dev",
         "start-electron": "npx electronmon --trace-warnings .",

@@ -78,9 +78,7 @@ describe("ApartmentsController", () => {
                     const result = await controller.getApartment(testCase.id);
                     expect(result).toEqual(serviceResult);
                 } else {
-                    apartmentsService.getApartment.mockRejectedValue(
-                        new Error(testCase.expectedResult.error!.message)
-                    );
+                    apartmentsService.getApartment.mockRejectedValue(new Error(testCase.expectedResult.error!.message));
                     await expect(controller.getApartment(testCase.id)).rejects.toThrow();
                 }
                 expect(apartmentsService.getApartment).toHaveBeenCalledWith(testCase.id);
@@ -90,10 +88,6 @@ describe("ApartmentsController", () => {
     describe("createApartment", () => {
         createApartmentTestCases.forEach((testCase: CreateApartmentTestCase) => {
             it(testCase.description, async () => {
-                const mockRequest = {
-                    user: { sub: testCase.residentId },
-                } as any;
-
                 if (testCase.expectedResult.success) {
                     const serviceResult = {
                         code: 1,
@@ -101,20 +95,15 @@ describe("ApartmentsController", () => {
                         data: testCase.expectedResult.data,
                     };
                     apartmentsService.createApartment.mockResolvedValue(serviceResult);
-                    const result = await controller.createApartment(testCase.data, mockRequest);
+                    const result = await controller.createApartment(testCase.data);
                     expect(result).toEqual(serviceResult);
                 } else {
                     apartmentsService.createApartment.mockRejectedValue(
                         new Error(testCase.expectedResult.error!.message)
                     );
-                    await expect(
-                        controller.createApartment(testCase.data, mockRequest)
-                    ).rejects.toThrow();
+                    await expect(controller.createApartment(testCase.data)).rejects.toThrow();
                 }
-                expect(apartmentsService.createApartment).toHaveBeenCalledWith(
-                    testCase.data,
-                    testCase.residentId
-                );
+                expect(apartmentsService.createApartment).toHaveBeenCalledWith(testCase.data);
             });
         });
     });
@@ -134,14 +123,9 @@ describe("ApartmentsController", () => {
                     apartmentsService.updateApartment.mockRejectedValue(
                         new Error(testCase.expectedResult.error!.message)
                     );
-                    await expect(
-                        controller.updateApartment(testCase.id, testCase.data)
-                    ).rejects.toThrow();
+                    await expect(controller.updateApartment(testCase.id, testCase.data)).rejects.toThrow();
                 }
-                expect(apartmentsService.updateApartment).toHaveBeenCalledWith(
-                    testCase.id,
-                    testCase.data
-                );
+                expect(apartmentsService.updateApartment).toHaveBeenCalledWith(testCase.id, testCase.data);
             });
         });
     });

@@ -12,12 +12,11 @@ import { UpdateApartmentDTO } from "./dtos/update-apartment.dto";
 @Controller("apartments")
 export class ApartmentsController {
     constructor(private readonly apartmentsService: ApartmentsService) {}
-
     @Post()
     @UseGuards(AccessTokenGuard, RolesGuard)
     @Roles("admin")
-    createApartment(@Body() data: CreateApartmentDTO, @Req() req: Request) {
-        return this.apartmentsService.createApartment(data, req.user!["sub"]);
+    createApartment(@Body() data: CreateApartmentDTO) {
+        return this.apartmentsService.createApartment(data);
     }
 
     @Get()

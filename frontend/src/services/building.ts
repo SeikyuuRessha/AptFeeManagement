@@ -46,3 +46,20 @@ export const getApartments = async (): Promise<Apartment[]> => {
 
     return res.data;
 };
+
+export const createApartment = async (apartmentData: {
+    roomNumber: number;
+    area: number;
+    buildingId: string;
+}): Promise<Apartment> => {
+    const res = (await api.post(
+        "/apartments",
+        apartmentData
+    )) as IResponse<Apartment>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
+};

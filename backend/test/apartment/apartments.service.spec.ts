@@ -78,9 +78,7 @@ describe("ApartmentsService", () => {
                     expect(result).toEqual(expectedServiceResult);
                 } else {
                     prisma.apartment.findUnique.mockResolvedValue(null);
-                    const result = await service.getApartment(testCase.id);
-                    expect(result.code).not.toBe(1); // Should return error code
-                    expect(result.msg).toContain("not found");
+                    await expect(service.getApartment(testCase.id)).rejects.toThrow();
                 }
             });
         });
@@ -88,40 +86,25 @@ describe("ApartmentsService", () => {
     describe("createApartment", () => {
         createApartmentTestCases.forEach((testCase: CreateApartmentTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.success) {
-                    const expectedServiceResult = {
-                        code: 1,
-                        msg: "Success",
-                        data: testCase.expectedResult.data,
-                    };
-                    // Mock valid resident
-                    prisma.resident.findUnique.mockResolvedValue(mockResident);
-                    prisma.apartment.create.mockResolvedValue(testCase.expectedResult.data);
+                const expectedServiceResult = {
+                    code: 1,
+                    msg: "Success",
+                    data: testCase.expectedResult.data,
+                };
 
-                    const result = await service.createApartment(
-                        testCase.data,
-                        testCase.residentId
-                    );
-                    expect(result).toEqual(expectedServiceResult);
-                    expect(prisma.apartment.create).toHaveBeenCalledWith({
-                        data: {
-                            ...testCase.data,
-                            residentId: testCase.residentId,
-                        },
-                        select: {
-                            building: true,
-                            resident: true,
-                        },
-                    });
-                } else if (testCase.expectedResult.error?.code === "RESIDENT_NOT_FOUND") {
-                    prisma.resident.findUnique.mockResolvedValue(null);
-                    const result = await service.createApartment(
-                        testCase.data,
-                        testCase.residentId
-                    );
-                    expect(result.code).not.toBe(1); // Should return error code
-                    expect(result.msg).toContain("not found");
-                }
+                prisma.apartment.create.mockResolvedValue(testCase.expectedResult.data);
+                const result = await service.createApartment(testCase.data);
+                expect(result).toEqual(expectedServiceResult);
+                expect(prisma.apartment.create).toHaveBeenCalledWith({
+                    data: {
+                        ...testCase.data,
+                        residentId: null, // Always null for new apartments (vacant)
+                    },
+                    select: {
+                        building: true,
+                        resident: true,
+                    },
+                });
             });
         });
     });
@@ -146,9 +129,7 @@ describe("ApartmentsService", () => {
                     });
                 } else {
                     prisma.apartment.findUnique.mockResolvedValue(null);
-                    const result = await service.updateApartment(testCase.id, testCase.data);
-                    expect(result.code).not.toBe(1); // Should return error code
-                    expect(result.msg).toContain("not found");
+                    await expect(service.updateApartment(testCase.id, testCase.data)).rejects.toThrow();
                 }
             });
         });
@@ -172,9 +153,7 @@ describe("ApartmentsService", () => {
                     });
                 } else {
                     prisma.apartment.findUnique.mockResolvedValue(null);
-                    const result = await service.deleteApartment(testCase.id);
-                    expect(result.code).not.toBe(1); // Should return error code
-                    expect(result.msg).toContain("not found");
+                    await expect(service.deleteApartment(testCase.id)).rejects.toThrow();
                 }
             });
         });

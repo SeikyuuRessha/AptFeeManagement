@@ -17,7 +17,6 @@ export interface CreateApartmentTestCase extends ApartmentTestCase {
         area: number;
         buildingId: string;
     };
-    residentId: string;
 }
 
 export interface GetApartmentTestCase extends ApartmentTestCase {
@@ -114,24 +113,19 @@ export const getApartmentTestCases: GetApartmentTestCase[] = [
 // Test cases for createApartment
 export const createApartmentTestCases: CreateApartmentTestCase[] = [
     {
-        description: "should create apartment successfully with valid data and resident",
+        description: "should create vacant apartment successfully",
         data: {
             roomNumber: 103,
             area: 90,
             buildingId: "building-1",
         },
-        residentId: "resident-1",
-        expectedResult: success(mockApartmentWithRelations),
-    },
-    {
-        description: "should throw RESIDENT_NOT_FOUND when resident does not exist",
-        data: {
-            roomNumber: 104,
-            area: 80,
-            buildingId: "building-1",
-        },
-        residentId: "non-existent-resident",
-        expectedResult: error("RESIDENT_NOT_FOUND", "Resident not found"),
+        expectedResult: success({
+            ...mockApartmentWithRelations,
+            roomNumber: 103,
+            area: 90,
+            residentId: null,
+            resident: null,
+        }),
     },
 ];
 

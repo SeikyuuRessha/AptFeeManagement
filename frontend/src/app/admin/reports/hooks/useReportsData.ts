@@ -40,14 +40,13 @@ export interface ApartmentData {
     };
     apartmentDetails: Array<{
         id: string;
-        number: string;
+        roomNumber: number;
         buildingId: string;
         buildingName: string;
         residentName: string | null;
         monthlyRent: number;
         status: "occupied" | "vacant";
-        size: number;
-        rooms: number;
+        area: number;
     }>;
     statistics: {
         totalBuildings: number;
@@ -175,7 +174,7 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
                             amount: Number(invoice.totalAmount) || 0,
                             months: overdueMonths,
                             apartment: apartment
-                                ? `${apartment.buildingId}-${apartment.number}`
+                                ? `${apartment.buildingId}-${apartment.roomNumber}`
                                 : "Unknown",
                         };
                     });
@@ -462,7 +461,7 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
 
                     return {
                         id: apt.id,
-                        number: apt.number || apt.id.slice(-4) || "N/A",
+                        roomNumber: apt.roomNumber,
                         buildingId: apt.buildingId,
                         buildingName: building?.name || "Unknown Building",
                         residentName: resident?.fullName || null,
@@ -470,8 +469,7 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
                         status: isOccupied
                             ? ("occupied" as const)
                             : ("vacant" as const),
-                        size: 50,
-                        rooms: 2,
+                        area: apt.area,
                     };
                 }); // Calculate statistics
                 const buildingCount = new Set(

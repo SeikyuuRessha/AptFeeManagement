@@ -25,7 +25,6 @@ import {
     BuildingOccupancyReport,
     PaymentAnalyticsReport,
     ApartmentOverview,
-    ApartmentDetailsTable,
     ApartmentCharts,
 } from "./components";
 import { useReportsData } from "./hooks/useReportsData";
@@ -103,8 +102,6 @@ const Reports = () => {
                 <Box sx={{ mt: 3 }}>
                     <ApartmentCharts data={apartmentData} />
                 </Box>
-
-                <ApartmentDetailsTable data={apartmentData} />
             </Box>
         );
     };

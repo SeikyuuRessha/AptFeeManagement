@@ -12,17 +12,10 @@ export interface Building {
 
 export interface Apartment {
     id: string;
-    number: string;
-    floor: number;
+    roomNumber: number;
+    area: number;
     buildingId: string;
-    residentId?: string;
-    building?: Building;
-    resident?: {
-        id: string;
-        fullName: string;
-        email: string;
-        phone?: string;
-    };
+    residentId: string | null;
     createdAt: string;
     updatedAt: string;
 }

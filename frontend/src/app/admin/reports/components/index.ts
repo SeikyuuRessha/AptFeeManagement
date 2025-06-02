@@ -6,5 +6,4 @@ export { ServiceUsageReport } from "./ServiceUsageReport";
 export { BuildingOccupancyReport } from "./BuildingOccupancyReport";
 export { PaymentAnalyticsReport } from "./PaymentAnalyticsReport";
 export { ApartmentOverview } from "./ApartmentOverview";
-export { ApartmentDetailsTable } from "./ApartmentDetailsTable";
 export { ApartmentCharts } from "./ApartmentCharts";

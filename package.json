@@ -15,7 +15,7 @@
     "type": "commonjs",
     "main": "./main.js",
     "scripts": {
-        "realStart": "electron .",
+        "web": "concurrently \"npm run start-frontend\" \"npm run start-backend\"",
         "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\" \"npm run start-electron\"",
         "start-frontend": "cd frontend && npm run dev",
         "start-backend": "cd backend && npm run start:dev",

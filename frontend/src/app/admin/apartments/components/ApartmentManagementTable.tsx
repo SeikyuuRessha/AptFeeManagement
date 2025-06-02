@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Paper,
     Typography,
@@ -27,21 +27,32 @@ import {
     CheckCircle,
     Cancel,
 } from "@mui/icons-material";
-import { ApartmentData } from "../hooks/useReportsData";
+import {
+    getApartments,
+    getBuildings,
+    Apartment,
+    Building,
+} from "@/services/building";
+import { getUsers } from "@/services/user";
+import { IUser } from "@/interfaces/user";
 
-interface ApartmentDetailsTableProps {
-    data: ApartmentData;
+interface ApartmentWithDetails extends Apartment {
+    buildingName: string;
+    residentName: string | null;
+    status: "occupied" | "vacant";
+    monthlyRent: number;
 }
 
-export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
-    data,
-}) => {
+export const ApartmentManagementTable: React.FC = () => {
+    const [apartments, setApartments] = useState<ApartmentWithDetails[]>([]);
+    const [buildings, setBuildings] = useState<Building[]>([]);
+    const [users, setUsers] = useState<IUser[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [buildingFilter, setBuildingFilter] = useState("all");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -51,15 +62,79 @@ export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
         }).format(amount);
     };
 
+    const calculateMonthlyRent = (apartment: Apartment): number => {
+        const baseRentPerSqm = 50000;
+
+        const areaMultiplier =
+            apartment.area > 100
+                ? 1.2
+                : apartment.area > 75
+                ? 1.1
+                : apartment.area > 50
+                ? 1.0
+                : 0.9;
+
+        const baseRent = apartment.area * baseRentPerSqm * areaMultiplier;
+
+        const roomBonus = (apartment.roomNumber % 10) * 50000; // Higher floors cost more
+
+        return Math.round(baseRent + roomBonus);
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [apartmentData, buildingData, userData] =
+                    await Promise.all([
+                        getApartments(),
+                        getBuildings(),
+                        getUsers(),
+                    ]);
+
+                setBuildings(buildingData);
+                setUsers(userData); // Combine apartment data with building and user info
+                const apartmentsWithDetails: ApartmentWithDetails[] =
+                    apartmentData.map((apt) => {
+                        const building = buildingData.find(
+                            (b) => b.id === apt.buildingId
+                        );
+                        const resident = userData.find(
+                            (u) => u.id === apt.residentId
+                        );
+                        return {
+                            ...apt,
+                            buildingName: building?.name || "Unknown Building",
+                            residentName: resident?.fullName || null,
+                            status: apt.residentId ? "occupied" : "vacant",
+                            monthlyRent: apt.residentId
+                                ? calculateMonthlyRent(apt)
+                                : 0,
+                        };
+                    });
+
+                setApartments(apartmentsWithDetails);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     // Get unique buildings for filter
     const uniqueBuildings = [
-        ...new Set(data.apartmentDetails.map((apt) => apt.buildingName)),
-    ]; // Filter apartments based on search and filters
-    const filteredApartments = data.apartmentDetails.filter((apartment) => {
+        ...new Set(apartments.map((apt) => apt.buildingName)),
+    ];
+
+    // Filter apartments based on search and filters
+    const filteredApartments = apartments.filter((apartment) => {
         const matchesSearch =
-            (apartment.number &&
-                apartment.number
-                    .toLowerCase()
+            (apartment.roomNumber &&
+                apartment.roomNumber
+                    .toString()
                     .includes(searchTerm.toLowerCase())) ||
             (apartment.buildingName &&
                 apartment.buildingName
@@ -116,10 +191,18 @@ export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
         );
     };
 
+    if (loading) {
+        return (
+            <Paper sx={{ mt: 3, p: 3, textAlign: "center" }}>
+                <Typography>Loading apartments...</Typography>
+            </Paper>
+        );
+    }
+
     return (
         <Paper sx={{ mt: 3, p: 3 }}>
             <Typography variant="h6" gutterBottom>
-                Apartment Details
+                Apartments Management
             </Typography>
 
             {/* Filters */}
@@ -289,12 +372,6 @@ export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
                             >
                                 Size (m²)
                             </TableCell>
-                            <TableCell
-                                align="center"
-                                sx={{ fontWeight: "bold" }}
-                            >
-                                Rooms
-                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -321,7 +398,7 @@ export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
                                                 fontSize: 18,
                                             }}
                                         />
-                                        {apartment.number}
+                                        {apartment.roomNumber}
                                     </Box>
                                 </TableCell>
                                 <TableCell>
@@ -390,13 +467,12 @@ export const ApartmentDetailsTable: React.FC<ApartmentDetailsTableProps> = ({
                                     align="right"
                                     sx={{ fontWeight: 500 }}
                                 >
-                                    {formatCurrency(apartment.monthlyRent)}
+                                    {apartment.status === "occupied"
+                                        ? formatCurrency(apartment.monthlyRent)
+                                        : "-"}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {apartment.size}
-                                </TableCell>
-                                <TableCell align="center">
-                                    {apartment.rooms}
+                                    {apartment.area.toFixed(2)}
                                 </TableCell>
                             </TableRow>
                         ))}

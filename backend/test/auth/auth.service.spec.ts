@@ -5,7 +5,6 @@ import { AuthService } from "../../src/auth/auth.service";
 import { PrismaService } from "../../src/prisma/prisma.service";
 import { authTestCases, error } from "./auth.test-cases";
 
-// Mock argon2
 jest.mock("argon2", () => ({
     hash: jest.fn(),
     verify: jest.fn(),
@@ -57,7 +56,6 @@ describe("AuthService", () => {
         jwtService = module.get<JwtService>(JwtService);
         configService = module.get<ConfigService>(ConfigService);
 
-        // Setup default config mock
         (configService.get as jest.Mock).mockImplementation((key: string) => {
             const config = {
                 JWT_ACCESS_SECRET: "access-secret",

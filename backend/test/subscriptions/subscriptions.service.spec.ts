@@ -84,7 +84,6 @@ describe("SubscriptionsService", () => {
         createSubscriptionTestCases.forEach((testCase: CreateSubscriptionTestCase) => {
             it(testCase.description, async () => {
                 if (testCase.expectedResult && testCase.expectedResult.code === 1) {
-                    // Mock valid service and apartment
                     prismaService.service.findUnique.mockResolvedValue(mockService);
                     prismaService.apartment.findUnique.mockResolvedValue(mockApartment);
                     prismaService.subscription.create.mockResolvedValue(testCase.expectedResult.data);
@@ -98,11 +97,9 @@ describe("SubscriptionsService", () => {
                         },
                     });
                 } else if (testCase.expectedResult && testCase.expectedResult.code === 2005) {
-                    // SERVICE_NOT_FOUND
                     prismaService.service.findUnique.mockResolvedValue(null);
                     await expect(service.createSubscription(testCase.data)).rejects.toThrow();
                 } else if (testCase.expectedResult && testCase.expectedResult.code === 2003) {
-                    // APARTMENT_NOT_FOUND
                     prismaService.service.findUnique.mockResolvedValue(mockService);
                     prismaService.apartment.findUnique.mockResolvedValue(null);
                     await expect(service.createSubscription(testCase.data)).rejects.toThrow();

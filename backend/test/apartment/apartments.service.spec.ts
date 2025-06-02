@@ -98,7 +98,7 @@ describe("ApartmentsService", () => {
                 expect(prisma.apartment.create).toHaveBeenCalledWith({
                     data: {
                         ...testCase.data,
-                        residentId: null, // Always null for new apartments (vacant)
+                        residentId: null,
                     },
                     select: {
                         building: true,

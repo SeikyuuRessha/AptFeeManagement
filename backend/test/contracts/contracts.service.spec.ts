@@ -41,7 +41,7 @@ describe("ContractsService", () => {
 
         service = module.get<ContractsService>(ContractsService);
         prisma = module.get(PrismaService);
-        // Set the mock prisma for test cases
+
         setMockPrisma(prisma);
     });
 
@@ -84,7 +84,6 @@ describe("ContractsService", () => {
                 if (testCase.mockSetup) {
                     testCase.mockSetup();
                 } else {
-                    // Default successful creation
                     prisma.resident.findUnique.mockResolvedValue({ id: testCase.residentId });
                     prisma.contract.create.mockResolvedValue({
                         id: "new-contract-id",

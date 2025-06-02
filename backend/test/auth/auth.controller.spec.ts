@@ -11,7 +11,6 @@ const mockTokens = {
     refreshToken: "mock-refresh-token",
 };
 
-// Test Cases Configuration
 const controllerTestCases = {
     register: [
         {
@@ -171,45 +170,43 @@ describe("AuthController", () => {
         });
     });
     describe("Error Handling", () => {
-        controllerTestCases.errors.forEach(
-            ({ name, operation, input, userId, refreshToken, expectedError }) => {
-                it(name, async () => {
-                    const errorResponse = error(expectedError, expect.any(Object));
+        controllerTestCases.errors.forEach(({ name, operation, input, userId, refreshToken, expectedError }) => {
+            it(name, async () => {
+                const errorResponse = error(expectedError, expect.any(Object));
 
-                    switch (operation) {
-                        case "register":
-                            if (input) {
-                                mockService.register.mockResolvedValue(errorResponse);
-                                const registerResult = await controller.register(input as any);
-                                expect(registerResult).toEqual(errorResponse);
-                            }
-                            break;
-                        case "login":
-                            if (input) {
-                                mockService.login.mockResolvedValue(errorResponse);
-                                const loginResult = await controller.login(input as any);
-                                expect(loginResult).toEqual(errorResponse);
-                            }
-                            break;
-                        case "logout":
-                            if (userId) {
-                                const mockReq = { user: { sub: userId } } as any;
-                                mockService.logout.mockResolvedValue(errorResponse);
-                                const logoutResult = await controller.logout(mockReq);
-                                expect(logoutResult).toEqual(errorResponse);
-                            }
-                            break;
-                        case "refresh":
-                            if (userId && refreshToken) {
-                                const refreshReq = { user: { sub: userId, refreshToken } } as any;
-                                mockService.refreshTokens.mockResolvedValue(errorResponse);
-                                const refreshResult = await controller.refreshTokens(refreshReq);
-                                expect(refreshResult).toEqual(errorResponse);
-                            }
-                            break;
-                    }
-                });
-            }
-        );
+                switch (operation) {
+                    case "register":
+                        if (input) {
+                            mockService.register.mockResolvedValue(errorResponse);
+                            const registerResult = await controller.register(input as any);
+                            expect(registerResult).toEqual(errorResponse);
+                        }
+                        break;
+                    case "login":
+                        if (input) {
+                            mockService.login.mockResolvedValue(errorResponse);
+                            const loginResult = await controller.login(input as any);
+                            expect(loginResult).toEqual(errorResponse);
+                        }
+                        break;
+                    case "logout":
+                        if (userId) {
+                            const mockReq = { user: { sub: userId } } as any;
+                            mockService.logout.mockResolvedValue(errorResponse);
+                            const logoutResult = await controller.logout(mockReq);
+                            expect(logoutResult).toEqual(errorResponse);
+                        }
+                        break;
+                    case "refresh":
+                        if (userId && refreshToken) {
+                            const refreshReq = { user: { sub: userId, refreshToken } } as any;
+                            mockService.refreshTokens.mockResolvedValue(errorResponse);
+                            const refreshResult = await controller.refreshTokens(refreshReq);
+                            expect(refreshResult).toEqual(errorResponse);
+                        }
+                        break;
+                }
+            });
+        });
     });
 });

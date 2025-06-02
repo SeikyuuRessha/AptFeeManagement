@@ -34,7 +34,6 @@ describe("InvoicesService", () => {
         service = module.get<InvoicesService>(InvoicesService);
         prisma = module.get(PrismaService);
 
-        // Set the mock prisma for test cases
         setMockPrisma(prisma);
     });
     describe("getInvoices", () => {

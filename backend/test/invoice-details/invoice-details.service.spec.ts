@@ -52,7 +52,6 @@ describe("InvoiceDetailsService", () => {
         service = module.get<InvoiceDetailsService>(InvoiceDetailsService);
         prisma = module.get(PrismaService);
 
-        // Set the mock prisma for test cases
         setMockPrisma(prisma);
     });
     describe("getInvoiceDetails", () => {
@@ -114,9 +113,7 @@ describe("InvoiceDetailsService", () => {
                     const result = await service.updateInvoiceDetail(testCase.id, testCase.data);
                     expect(result).toEqual(testCase.expectedResult);
                 } else {
-                    await expect(
-                        service.updateInvoiceDetail(testCase.id, testCase.data)
-                    ).rejects.toThrow();
+                    await expect(service.updateInvoiceDetail(testCase.id, testCase.data)).rejects.toThrow();
                 }
             });
         });

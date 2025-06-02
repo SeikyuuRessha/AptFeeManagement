@@ -56,12 +56,10 @@ describe("NotificationsService", () => {
         getNotificationTestCases.forEach((testCase: GetNotificationTestCase) => {
             it(testCase.description, async () => {
                 if (testCase.expectedResult && testCase.expectedResult.code === 1) {
-                    // Success case
                     prismaService.notification.findUnique.mockResolvedValue(testCase.expectedResult.data);
                     const result = await service.getNofication(testCase.id);
                     expect(result).toEqual(testCase.expectedResult);
                 } else if (testCase.expectedResult) {
-                    // Error case - service throws AppException
                     prismaService.notification.findUnique.mockResolvedValue(null);
                     await expect(service.getNofication(testCase.id)).rejects.toThrow();
                 }

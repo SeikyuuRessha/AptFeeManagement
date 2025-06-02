@@ -6,7 +6,6 @@ import { ExceptionCode } from "../../src/common/exception/exception-code";
 const success = (data: any) => ({ code: 1, msg: "Success", data });
 const error = (code: any, data: any = null) => ({ code: code.code, msg: code.msg, data });
 
-// Test Cases Configuration
 const controllerTestCases = {
     create: [
         {
@@ -77,9 +76,7 @@ describe("BuildingsController", () => {
 
     const mockService = {
         createBuilding: jest.fn(),
-        getBuildings: jest
-            .fn()
-            .mockResolvedValue(success(controllerTestCases.create.map((c) => c.result))),
+        getBuildings: jest.fn().mockResolvedValue(success(controllerTestCases.create.map((c) => c.result))),
         getBuilding: jest.fn(),
         updateBuilding: jest.fn(),
         deleteBuilding: jest.fn(),

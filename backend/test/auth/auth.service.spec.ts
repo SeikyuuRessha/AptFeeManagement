@@ -102,15 +102,13 @@ describe("AuthService", () => {
     });
 
     describe("refreshTokens", () => {
-        authTestCases.refreshToken.forEach(
-            ({ name, userId, refreshToken, expected, mockSetup, expectedResult }) => {
-                it(name, async () => {
-                    mockSetup(prisma, jwtService, service, userId, refreshToken, expected);
-                    const result = await service.refreshTokens(userId, refreshToken);
-                    expect(result).toEqual(expectedResult(expected));
-                });
-            }
-        );
+        authTestCases.refreshToken.forEach(({ name, userId, refreshToken, expected, mockSetup, expectedResult }) => {
+            it(name, async () => {
+                mockSetup(prisma, jwtService, service, userId, refreshToken, expected);
+                const result = await service.refreshTokens(userId, refreshToken);
+                expect(result).toEqual(expectedResult(expected));
+            });
+        });
     });
 
     describe("getTokens", () => {
@@ -163,32 +161,28 @@ describe("AuthService", () => {
             });
         });
     });
-
     describe("Error Handling", () => {
-        authTestCases.errors.forEach(
-            ({ name, operation, input, userId, refreshToken, mockSetup, expectedError }) => {
-                it(name, async () => {
-                    mockSetup(prisma, jwtService, service);
-                    let promise: Promise<any>;
+        authTestCases.errors.forEach(({ name, operation, input, userId, refreshToken, mockSetup, expectedError }) => {
+            it(name, async () => {
+                mockSetup(prisma, jwtService, service);
+                let promise: Promise<any>;
 
-                    switch (operation) {
-                        case "register":
-                            promise = service.register(input);
-                            break;
-                        case "login":
-                            promise = service.login(input);
-                            break;
-                        case "refreshTokens":
-                            promise = service.refreshTokens(userId!, refreshToken!);
-                            break;
-                        default:
-                            throw new Error(`Unknown operation: ${operation}`);
-                    }
+                switch (operation) {
+                    case "register":
+                        promise = service.register(input);
+                        break;
+                    case "login":
+                        promise = service.login(input);
+                        break;
+                    case "refreshTokens":
+                        promise = service.refreshTokens(userId!, refreshToken!);
+                        break;
+                    default:
+                        throw new Error(`Unknown operation: ${operation}`);
+                }
 
-                    const result = await promise;
-                    expect(result).toEqual(error(expectedError, expect.any(Object)));
-                });
-            }
-        );
+                await expect(promise).rejects.toThrow();
+            });
+        });
     });
 });

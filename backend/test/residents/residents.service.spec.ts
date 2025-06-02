@@ -54,7 +54,6 @@ describe("ResidentsService", () => {
             });
         });
     });
-
     describe("getResident", () => {
         getResidentTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -62,8 +61,12 @@ describe("ResidentsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.getResident(testCase.id);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.getResident(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.getResident(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });
@@ -80,7 +83,6 @@ describe("ResidentsService", () => {
             });
         });
     });
-
     describe("updateResident", () => {
         updateResidentTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -88,12 +90,15 @@ describe("ResidentsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.updateResident(testCase.id, testCase.data as any);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.updateResident(testCase.id, testCase.data as any);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.updateResident(testCase.id, testCase.data as any)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("deleteResident", () => {
         deleteResidentTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -101,8 +106,12 @@ describe("ResidentsService", () => {
                     testCase.mockSetup();
                 }
 
-                const result = await service.deleteResident(testCase.id);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.deleteResident(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.deleteResident(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });

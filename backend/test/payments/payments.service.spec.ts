@@ -22,6 +22,7 @@ describe("PaymentsService", () => {
             },
             invoice: {
                 findUnique: jest.fn(),
+                update: jest.fn(),
             },
         };
 
@@ -78,9 +79,7 @@ describe("PaymentsService", () => {
                 testCase.mockSetup?.();
 
                 if (testCase.shouldThrow) {
-                    await expect(service.createPayment(testCase.data)).rejects.toThrow(
-                        AppException
-                    );
+                    await expect(service.createPayment(testCase.data)).rejects.toThrow(AppException);
                 } else {
                     const result = await service.createPayment(testCase.data);
                     expect(result).toEqual(testCase.expectedResult);

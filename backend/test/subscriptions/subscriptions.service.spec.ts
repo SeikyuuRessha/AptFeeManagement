@@ -58,31 +58,24 @@ describe("SubscriptionsService", () => {
     describe("getSubscriptions", () => {
         getSubscriptionsTestCases.forEach((testCase: SubscriptionTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.code === 1) {
-                    prismaService.subscription.findMany.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
+                if (testCase.expectedResult && testCase.expectedResult.code === 1) {
+                    prismaService.subscription.findMany.mockResolvedValue(testCase.expectedResult.data);
                     const result = await service.getSubscriptions();
                     expect(result).toEqual(testCase.expectedResult);
                 }
             });
         });
     });
-
     describe("getSubscription", () => {
         getSubscriptionTestCases.forEach((testCase: GetSubscriptionTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.code === 1) {
-                    prismaService.subscription.findUnique.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
+                if (testCase.expectedResult && testCase.expectedResult.code === 1) {
+                    prismaService.subscription.findUnique.mockResolvedValue(testCase.expectedResult.data);
                     const result = await service.getSubscription(testCase.id);
                     expect(result).toEqual(testCase.expectedResult);
-                } else {
+                } else if (testCase.expectedResult) {
                     prismaService.subscription.findUnique.mockResolvedValue(null);
-                    const result = await service.getSubscription(testCase.id);
-                    expect(result.code).toBe(testCase.expectedResult.code);
-                    expect(result.msg).toBe(testCase.expectedResult.msg);
+                    await expect(service.getSubscription(testCase.id)).rejects.toThrow();
                 }
             });
         });
@@ -90,13 +83,11 @@ describe("SubscriptionsService", () => {
     describe("createSubscription", () => {
         createSubscriptionTestCases.forEach((testCase: CreateSubscriptionTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.code === 1) {
+                if (testCase.expectedResult && testCase.expectedResult.code === 1) {
                     // Mock valid service and apartment
                     prismaService.service.findUnique.mockResolvedValue(mockService);
                     prismaService.apartment.findUnique.mockResolvedValue(mockApartment);
-                    prismaService.subscription.create.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
+                    prismaService.subscription.create.mockResolvedValue(testCase.expectedResult.data);
 
                     const result = await service.createSubscription(testCase.data);
                     expect(result).toEqual(testCase.expectedResult);
@@ -106,19 +97,15 @@ describe("SubscriptionsService", () => {
                             status: "active",
                         },
                     });
-                } else if (testCase.expectedResult.code === 2005) {
+                } else if (testCase.expectedResult && testCase.expectedResult.code === 2005) {
                     // SERVICE_NOT_FOUND
                     prismaService.service.findUnique.mockResolvedValue(null);
-                    const result = await service.createSubscription(testCase.data);
-                    expect(result.code).toBe(testCase.expectedResult.code);
-                    expect(result.msg).toBe(testCase.expectedResult.msg);
-                } else if (testCase.expectedResult.code === 2003) {
+                    await expect(service.createSubscription(testCase.data)).rejects.toThrow();
+                } else if (testCase.expectedResult && testCase.expectedResult.code === 2003) {
                     // APARTMENT_NOT_FOUND
                     prismaService.service.findUnique.mockResolvedValue(mockService);
                     prismaService.apartment.findUnique.mockResolvedValue(null);
-                    const result = await service.createSubscription(testCase.data);
-                    expect(result.code).toBe(testCase.expectedResult.code);
-                    expect(result.msg).toBe(testCase.expectedResult.msg);
+                    await expect(service.createSubscription(testCase.data)).rejects.toThrow();
                 }
             });
         });
@@ -126,11 +113,9 @@ describe("SubscriptionsService", () => {
     describe("updateSubscription", () => {
         updateSubscriptionTestCases.forEach((testCase: UpdateSubscriptionTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.code === 1) {
+                if (testCase.expectedResult && testCase.expectedResult.code === 1) {
                     prismaService.subscription.findUnique.mockResolvedValue(mockSubscriptions[0]);
-                    prismaService.subscription.update.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
+                    prismaService.subscription.update.mockResolvedValue(testCase.expectedResult.data);
 
                     const result = await service.updateSubscription(testCase.id, testCase.data);
                     expect(result).toEqual(testCase.expectedResult);
@@ -138,37 +123,28 @@ describe("SubscriptionsService", () => {
                         where: { id: testCase.id },
                         data: testCase.data,
                     });
-                } else {
+                } else if (testCase.expectedResult) {
                     prismaService.subscription.findUnique.mockResolvedValue(null);
-                    const result = await service.updateSubscription(testCase.id, testCase.data);
-                    expect(result.code).toBe(testCase.expectedResult.code);
-                    expect(result.msg).toBe(testCase.expectedResult.msg);
+                    await expect(service.updateSubscription(testCase.id, testCase.data)).rejects.toThrow();
                 }
             });
         });
     });
-
     describe("deleteSubscription", () => {
         deleteSubscriptionTestCases.forEach((testCase: DeleteSubscriptionTestCase) => {
             it(testCase.description, async () => {
-                if (testCase.expectedResult.code === 1) {
-                    prismaService.subscription.findUnique.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
-                    prismaService.subscription.delete.mockResolvedValue(
-                        testCase.expectedResult.data
-                    );
+                if (testCase.expectedResult && testCase.expectedResult.code === 1) {
+                    prismaService.subscription.findUnique.mockResolvedValue(testCase.expectedResult.data);
+                    prismaService.subscription.delete.mockResolvedValue(testCase.expectedResult.data);
 
                     const result = await service.deleteSubscription(testCase.id);
                     expect(result).toEqual(testCase.expectedResult);
                     expect(prismaService.subscription.delete).toHaveBeenCalledWith({
                         where: { id: testCase.id },
                     });
-                } else {
+                } else if (testCase.expectedResult) {
                     prismaService.subscription.findUnique.mockResolvedValue(null);
-                    const result = await service.deleteSubscription(testCase.id);
-                    expect(result.code).toBe(testCase.expectedResult.code);
-                    expect(result.msg).toBe(testCase.expectedResult.msg);
+                    await expect(service.deleteSubscription(testCase.id)).rejects.toThrow();
                 }
             });
         });

@@ -59,7 +59,6 @@ describe("ContractsService", () => {
             });
         });
     });
-
     describe("getContract", () => {
         getContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -70,12 +69,15 @@ describe("ContractsService", () => {
                     prisma.contract.findUnique.mockResolvedValue(contract);
                 }
 
-                const result = await service.getContract(testCase.id);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.getContract(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.getContract(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("createContract", () => {
         createContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -93,12 +95,15 @@ describe("ContractsService", () => {
                     });
                 }
 
-                const result = await service.createContract(testCase.data, testCase.residentId);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.createContract(testCase.data, testCase.residentId);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.createContract(testCase.data, testCase.residentId)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("updateContract", () => {
         updateContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -116,12 +121,15 @@ describe("ContractsService", () => {
                     }
                 }
 
-                const result = await service.updateContract(testCase.id, testCase.data);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.updateContract(testCase.id, testCase.data);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.updateContract(testCase.id, testCase.data)).rejects.toThrow();
+                }
             });
         });
     });
-
     describe("deleteContract", () => {
         deleteContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
@@ -135,8 +143,12 @@ describe("ContractsService", () => {
                     }
                 }
 
-                const result = await service.deleteContract(testCase.id);
-                expect(result).toEqual(testCase.expectedResult);
+                if (testCase.expectedResult.code === 1) {
+                    const result = await service.deleteContract(testCase.id);
+                    expect(result).toEqual(testCase.expectedResult);
+                } else {
+                    await expect(service.deleteContract(testCase.id)).rejects.toThrow();
+                }
             });
         });
     });

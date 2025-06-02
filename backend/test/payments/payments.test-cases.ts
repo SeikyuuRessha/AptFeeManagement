@@ -154,6 +154,7 @@ export const createPaymentTestCases: CreatePaymentTestCase[] = [
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+            mockPrisma.invoice.update.mockResolvedValue(mockInvoice);
         },
     },
     {
@@ -184,6 +185,7 @@ export const createPaymentTestCases: CreatePaymentTestCase[] = [
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+            mockPrisma.invoice.update.mockResolvedValue(mockInvoice);
         },
     },
     {

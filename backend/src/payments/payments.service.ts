@@ -14,9 +14,14 @@ export class PaymentsService {
     getPayments() {
         return handleService(() => this.prisma.payment.findMany());
     }
-
     getPayment(id: string) {
-        return handleService(() => this.prisma.payment.findUnique({ where: { id } }));
+        return handleService(async () => {
+            const payment = await this.prisma.payment.findUnique({ where: { id } });
+            if (!payment) {
+                throw new AppException(ExceptionCode.PAYMENT_NOT_FOUND, { id });
+            }
+            return payment;
+        });
     }
 
     async createPayment(data: CreatePaymentDTO) {
@@ -24,18 +29,13 @@ export class PaymentsService {
             const invoice = await this.prisma.invoice.findUnique({
                 where: { id: data.invoiceId },
             });
-
             if (!invoice)
                 throw new AppException(ExceptionCode.INVOICE_NOT_FOUND, {
                     invoiceId: data.invoiceId,
                 });
 
             const payment = await this.prisma.payment.create({
-                data: {
-                    ...data,
-                    status: "COMPLETED",
-                    paymentDate: new Date(Date.now()),
-                },
+                data: data,
             });
             await this.prisma.invoice.update({
                 where: { id: data.invoiceId },

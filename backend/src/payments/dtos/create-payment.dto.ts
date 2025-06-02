@@ -7,6 +7,10 @@ export class CreatePaymentDTO {
     @IsPositive()
     amount: number;
 
+    @IsDate()
+    @Type(() => Date)
+    paymentDate: Date;
+
     @IsOptional()
     @IsIn(["PENDING", "COMPLETED", "FAILED"])
     status: "PENDING" | "COMPLETED" | "FAILED" = "COMPLETED";

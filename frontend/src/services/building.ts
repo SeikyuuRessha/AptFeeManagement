@@ -5,7 +5,7 @@ export interface Building {
     id: string;
     name: string;
     address: string;
-    numberOfFloors: number;
+    apartmentCount: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -55,4 +55,49 @@ export const createApartment = async (apartmentData: {
     }
 
     return res.data;
+};
+
+export const createBuilding = async (buildingData: {
+    name: string;
+    address: string;
+    apartmentCount: number;
+}): Promise<Building> => {
+    const res = (await api.post(
+        "/buildings",
+        buildingData
+    )) as IResponse<Building>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
+};
+
+export const updateBuilding = async (
+    id: string,
+    buildingData: {
+        name: string;
+        address: string;
+        apartmentCount: number;
+    }
+): Promise<Building> => {
+    const res = (await api.put(
+        `/buildings/${id}`,
+        buildingData
+    )) as IResponse<Building>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
+};
+
+export const deleteBuilding = async (id: string): Promise<void> => {
+    const res = (await api.delete(`/buildings/${id}`)) as IResponse<void>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
 };

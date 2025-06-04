@@ -17,6 +17,7 @@ import {
     MenuItem,
     TablePagination,
     Tooltip,
+    InputAdornment,
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import {
@@ -26,6 +27,7 @@ import {
     Business,
     CheckCircle,
     Cancel,
+    Search as SearchIcon,
 } from "@mui/icons-material";
 import {
     getApartments,
@@ -74,11 +76,7 @@ export const ApartmentManagementTable: React.FC = () => {
                 ? 1.0
                 : 0.9;
 
-        const baseRent = apartment.area * baseRentPerSqm * areaMultiplier;
-
-        const roomBonus = (apartment.roomNumber % 10) * 50000; // Higher floors cost more
-
-        return Math.round(baseRent + roomBonus);
+        return Math.round(apartment.area * baseRentPerSqm * areaMultiplier);
     };
 
     useEffect(() => {
@@ -207,15 +205,25 @@ export const ApartmentManagementTable: React.FC = () => {
 
             {/* Filters */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
+                {" "}
                 <Grid item xs={12} md={4}>
                     <TextField
                         fullWidth
-                        label="Search apartments"
+                        label="Tìm kiếm căn hộ"
                         variant="outlined"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search by apartment number, building, or resident"
+                        placeholder="Tìm kiếm theo số phòng, tòa nhà hoặc cư dân..."
                         size="small"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon
+                                        sx={{ color: "action.active" }}
+                                    />
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} md={4}>

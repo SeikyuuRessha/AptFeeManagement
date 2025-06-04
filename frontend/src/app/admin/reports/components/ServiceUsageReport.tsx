@@ -59,40 +59,101 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
         }).format(amount);
     };
 
+    // Calculate summary statistics
+    const totalServices = data.length;
+    const totalActiveSubscriptions = data.reduce(
+        (sum, service) => sum + service.activeSubscriptions,
+        0
+    );
+    const totalInactiveSubscriptions = data.reduce(
+        (sum, service) => sum + service.inactiveSubscriptions,
+        0
+    );
+    const totalRevenue = data.reduce(
+        (sum, service) => sum + service.totalRevenue,
+        0
+    );
+    const averageRevenue = totalServices > 0 ? totalRevenue / totalServices : 0;
+
     const chartData = {
         labels: data.map((service) => service.serviceName),
         datasets: [
             {
                 label: "Active Subscriptions",
                 data: data.map((service) => service.activeSubscriptions),
-                backgroundColor: "rgba(54, 162, 235, 0.8)",
-                borderColor: "rgba(54, 162, 235, 1)",
+                backgroundColor: "rgba(76, 175, 80, 0.8)",
+                borderColor: "rgba(76, 175, 80, 1)",
                 borderWidth: 1,
             },
             {
-                label: "Total Revenue (in millions VND)",
-                data: data.map((service) => service.totalRevenue / 1000000),
-                backgroundColor: "rgba(75, 192, 192, 0.8)",
-                borderColor: "rgba(75, 192, 192, 1)",
+                label: "Inactive Subscriptions",
+                data: data.map((service) => service.inactiveSubscriptions),
+                backgroundColor: "rgba(158, 158, 158, 0.8)",
+                borderColor: "rgba(158, 158, 158, 1)",
                 borderWidth: 1,
+            },
+            {
+                label: "Total Revenue (millions VND)",
+                data: data.map((service) => service.totalRevenue / 1000000),
+                backgroundColor: "rgba(54, 162, 235, 0.8)",
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+                yAxisID: "y1",
             },
         ],
     };
 
     const chartOptions = {
         responsive: true,
+        interaction: {
+            mode: "index" as const,
+            intersect: false,
+        },
         plugins: {
             legend: {
                 position: "top" as const,
             },
             title: {
                 display: true,
-                text: "Service Usage Overview",
+                text: "Service Usage & Revenue Overview",
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context: any) {
+                        const label = context.dataset.label || "";
+                        if (label.includes("Revenue")) {
+                            return `${label}: ${formatCurrency(
+                                context.parsed.y * 1000000
+                            )}`;
+                        }
+                        return `${label}: ${context.parsed.y}`;
+                    },
+                },
             },
         },
         scales: {
             y: {
+                type: "linear" as const,
+                display: true,
+                position: "left" as const,
                 beginAtZero: true,
+                title: {
+                    display: true,
+                    text: "Subscriptions",
+                },
+            },
+            y1: {
+                type: "linear" as const,
+                display: true,
+                position: "right" as const,
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: "Revenue (millions VND)",
+                },
+                grid: {
+                    drawOnChartArea: false,
+                },
             },
         },
     };

@@ -1,11 +1,15 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateContractDto {
-  @IsString()
-  @IsNotEmpty()
-  documentPath: string;
+    @IsString()
+    @IsNotEmpty()
+    documentPath: string;
 
-  @IsString()
-  @IsNotEmpty()
-  status: string;
+    @IsString()
+    @IsNotEmpty()
+    status: string;
+
+    @IsString()
+    @IsNotEmpty()
+    residentId: string;
 }

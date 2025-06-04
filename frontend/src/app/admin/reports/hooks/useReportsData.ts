@@ -8,6 +8,8 @@ import {
 } from "@/services/invoice";
 import { getApartments, Apartment, getBuildings } from "@/services/building";
 import { getUsers } from "@/services/user";
+import { getServices, Service } from "@/services/service";
+import { getSubscriptions, Subscription } from "@/services/subscription";
 
 // Data interfaces for reports
 export interface FinancialData {
@@ -114,9 +116,7 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
         const fetchReportsData = async () => {
             try {
                 setLoading(true);
-                setError(null);
-
-                // Fetch all required data
+                setError(null); // Fetch all required data
                 const [
                     invoices,
                     payments,
@@ -124,6 +124,8 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
                     users,
                     buildings,
                     invoiceDetails,
+                    services,
+                    subscriptions,
                 ] = await Promise.all([
                     getInvoices(),
                     getPayments(),
@@ -131,6 +133,8 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
                     getUsers(),
                     getBuildings(),
                     getInvoiceDetails(),
+                    getServices(),
+                    getSubscriptions(),
                 ]); // Process financial data
                 const monthlyRevenue = new Array(12).fill(0);
 
@@ -177,52 +181,86 @@ export const useReportsData = (selectedReport: string, dateRange: string) => {
                                 ? `${apartment.buildingId}-${apartment.roomNumber}`
                                 : "Unknown",
                         };
-                    });
-
-                // Process service usage data for new report
+                    }); // Process service usage data for new report
                 const serviceUsageMap = new Map<
                     string,
                     {
+                        id: string;
                         name: string;
                         totalSubscriptions: number;
                         totalRevenue: number;
                         totalUsage: number;
                         usageCount: number;
                         activeSubscriptions: number;
+                        inactiveSubscriptions: number;
                     }
                 >();
 
-                // Aggregate service data from invoice details
-                invoiceDetails.forEach((detail) => {
-                    const serviceName =
-                        detail.subscription?.service?.name || "Unknown Service";
-                    const existing = serviceUsageMap.get(serviceName) || {
-                        name: serviceName,
-                        totalSubscriptions: 0,
+                // Create service maps for quick lookup
+                const serviceMap = new Map(services.map((s) => [s.id, s]));
+                const subscriptionsByService = new Map<
+                    string,
+                    Subscription[]
+                >();
+
+                // Group subscriptions by service
+                subscriptions.forEach((subscription) => {
+                    const serviceId = subscription.serviceId;
+                    if (!subscriptionsByService.has(serviceId)) {
+                        subscriptionsByService.set(serviceId, []);
+                    }
+                    subscriptionsByService.get(serviceId)!.push(subscription);
+                });
+
+                // Initialize service usage data from services and subscriptions
+                services.forEach((service) => {
+                    const serviceSubscriptions =
+                        subscriptionsByService.get(service.id) || [];
+                    const activeSubscriptions = serviceSubscriptions.filter(
+                        (s) => s.status === "active"
+                    ).length;
+                    const inactiveSubscriptions = serviceSubscriptions.filter(
+                        (s) => s.status === "inactive"
+                    ).length;
+
+                    serviceUsageMap.set(service.id, {
+                        id: service.id,
+                        name: service.name,
+                        totalSubscriptions: serviceSubscriptions.length,
                         totalRevenue: 0,
                         totalUsage: 0,
                         usageCount: 0,
-                        activeSubscriptions: 0,
-                    };
+                        activeSubscriptions,
+                        inactiveSubscriptions,
+                    });
+                }); // Aggregate revenue and usage data from invoice details
+                invoiceDetails.forEach((detail) => {
+                    if (detail.subscription?.service) {
+                        const serviceId = detail.subscription.service.id;
+                        const service = serviceMap.get(serviceId);
 
-                    existing.totalRevenue += Number(detail.total) || 0;
-                    existing.totalUsage += detail.quantity || 0;
-                    existing.usageCount += 1;
-                    serviceUsageMap.set(serviceName, existing);
+                        if (service && serviceUsageMap.has(serviceId)) {
+                            const existing = serviceUsageMap.get(serviceId)!;
+                            // Convert string to number for calculations
+                            existing.totalRevenue += Number(detail.total) || 0;
+                            existing.totalUsage += detail.quantity || 0;
+                            existing.usageCount += 1;
+                        }
+                    }
                 });
 
                 const serviceUsageArray: ServiceUsageData[] = Array.from(
                     serviceUsageMap.values()
                 ).map((service) => ({
                     serviceName: service.name,
-                    totalSubscriptions: service.usageCount,
+                    totalSubscriptions: service.totalSubscriptions,
                     totalRevenue: service.totalRevenue,
                     averageUsage:
                         service.usageCount > 0
                             ? service.totalUsage / service.usageCount
                             : 0,
-                    activeSubscriptions: service.usageCount, // Simplified for now
-                    inactiveSubscriptions: 0, // Simplified for now
+                    activeSubscriptions: service.activeSubscriptions,
+                    inactiveSubscriptions: service.inactiveSubscriptions,
                 }));
 
                 setServiceUsageData(serviceUsageArray);

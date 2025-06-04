@@ -1,7 +1,6 @@
-import { Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Post, Put, UseGuards, Body } from "@nestjs/common";
 import { ContractsService } from "./contracts.service";
 import { CreateContractDto } from "./dtos/create-contract.dto";
-import { Request } from "express";
 import { UpdateContractDTO } from "./dtos/update-contract.dto";
 import { AccessTokenGuard } from "../common/guards/accessToken.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -20,18 +19,17 @@ export class ContractsController {
     getContract(id: string) {
         return this.contractsService.getContract(id);
     }
-
     @Post()
     @Roles("admin")
     @UseGuards(AccessTokenGuard, RolesGuard)
-    createContract(data: CreateContractDto, @Req() req: Request) {
-        return this.contractsService.createContract(data, req.user!["sub"]);
+    createContract(@Body() data: CreateContractDto) {
+        return this.contractsService.createContract(data, data.residentId);
     }
 
     @Put(":id")
     @Roles("admin")
     @UseGuards(AccessTokenGuard, RolesGuard)
-    updateContract(@Param("id") id: string, data: UpdateContractDTO) {
+    updateContract(@Param("id") id: string, @Body() data: UpdateContractDTO) {
         return this.contractsService.updateContract(id, data);
     }
 

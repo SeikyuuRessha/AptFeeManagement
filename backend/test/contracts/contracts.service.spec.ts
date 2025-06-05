@@ -81,6 +81,12 @@ describe("ContractsService", () => {
     describe("createContract", () => {
         createContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
+                // Create complete DTO including residentId
+                const createContractDto = {
+                    ...testCase.data,
+                    residentId: testCase.residentId,
+                };
+
                 if (testCase.mockSetup) {
                     testCase.mockSetup();
                 } else {
@@ -95,10 +101,10 @@ describe("ContractsService", () => {
                 }
 
                 if (testCase.expectedResult.code === 1) {
-                    const result = await service.createContract(testCase.data, testCase.residentId);
+                    const result = await service.createContract(createContractDto, testCase.residentId);
                     expect(result).toEqual(testCase.expectedResult);
                 } else {
-                    await expect(service.createContract(testCase.data, testCase.residentId)).rejects.toThrow();
+                    await expect(service.createContract(createContractDto, testCase.residentId)).rejects.toThrow();
                 }
             });
         });

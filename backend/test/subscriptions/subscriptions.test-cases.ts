@@ -69,6 +69,11 @@ export const mockApartment = {
     number: "101",
     floor: 1,
     buildingId: "building-1",
+    resident: {
+        id: "resident-1",
+        name: "Test Resident",
+        email: "resident@test.com",
+    },
 };
 
 export const mockService = {
@@ -104,10 +109,7 @@ export const getSubscriptionTestCases: GetSubscriptionTestCase[] = [
     {
         description: "should throw SUBSCRIPTION_NOT_FOUND when subscription does not exist",
         id: "non-existent-id",
-        expectedResult: error(
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.code,
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg
-        ),
+        expectedResult: error(ExceptionCode.SUBSCRIPTION_NOT_FOUND.code, ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg),
     },
 ];
 
@@ -140,10 +142,7 @@ export const createSubscriptionTestCases: CreateSubscriptionTestCase[] = [
             apartmentId: "apartment-1",
             serviceId: "non-existent-service",
         },
-        expectedResult: error(
-            ExceptionCode.SERVICE_NOT_FOUND.code,
-            ExceptionCode.SERVICE_NOT_FOUND.msg
-        ),
+        expectedResult: error(ExceptionCode.SERVICE_NOT_FOUND.code, ExceptionCode.SERVICE_NOT_FOUND.msg),
     },
     {
         description: "should throw APARTMENT_NOT_FOUND when apartment does not exist",
@@ -153,10 +152,7 @@ export const createSubscriptionTestCases: CreateSubscriptionTestCase[] = [
             apartmentId: "non-existent-apartment",
             serviceId: "service-1",
         },
-        expectedResult: error(
-            ExceptionCode.APARTMENT_NOT_FOUND.code,
-            ExceptionCode.APARTMENT_NOT_FOUND.msg
-        ),
+        expectedResult: error(ExceptionCode.APARTMENT_NOT_FOUND.code, ExceptionCode.APARTMENT_NOT_FOUND.msg),
     },
 ];
 
@@ -182,10 +178,7 @@ export const updateSubscriptionTestCases: UpdateSubscriptionTestCase[] = [
         data: {
             frequency: "quarterly",
         },
-        expectedResult: error(
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.code,
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg
-        ),
+        expectedResult: error(ExceptionCode.SUBSCRIPTION_NOT_FOUND.code, ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg),
     },
 ];
 
@@ -199,9 +192,6 @@ export const deleteSubscriptionTestCases: DeleteSubscriptionTestCase[] = [
     {
         description: "should throw SUBSCRIPTION_NOT_FOUND when subscription does not exist",
         id: "non-existent-id",
-        expectedResult: error(
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.code,
-            ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg
-        ),
+        expectedResult: error(ExceptionCode.SUBSCRIPTION_NOT_FOUND.code, ExceptionCode.SUBSCRIPTION_NOT_FOUND.msg),
     },
 ];

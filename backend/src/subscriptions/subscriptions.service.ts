@@ -32,14 +32,18 @@ export class SubscriptionsService {
                 throw new AppException(ExceptionCode.SERVICE_NOT_FOUND, {
                     serviceId: data.serviceId,
                 });
-            }
-
-            // Validate apartment exists
+            } // Validate apartment exists and has a resident
             const apartment = await this.prisma.apartment.findUnique({
                 where: { id: data.apartmentId },
+                include: { resident: true },
             });
             if (!apartment) {
                 throw new AppException(ExceptionCode.APARTMENT_NOT_FOUND, {
+                    apartmentId: data.apartmentId,
+                });
+            }
+            if (!apartment.resident) {
+                throw new AppException(ExceptionCode.APARTMENT_NO_RESIDENT, {
                     apartmentId: data.apartmentId,
                 });
             }

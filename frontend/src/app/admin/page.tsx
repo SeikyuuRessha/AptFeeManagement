@@ -8,9 +8,12 @@ import {
     Apartment,
     Payment,
     People,
+    HouseOutlined,
     Report,
     MiscellaneousServices,
-    Settings,
+    Subscriptions,
+    Description,
+    Notifications,
 } from "@mui/icons-material";
 
 import GrowthComparisonChart from "./components/GrowthComparisonChart";
@@ -19,7 +22,7 @@ const menuItems = [
     { text: "Quản lý người dùng", icon: <People />, path: "/admin/users" },
     {
         text: "Quản lý căn hộ",
-        icon: <Apartment />,
+        icon: <HouseOutlined />,
         path: "/admin/apartments",
     },
     {
@@ -28,16 +31,31 @@ const menuItems = [
         path: "/admin/payments",
     },
     {
-        text: "Cài đặt hệ thống",
-        icon: <Settings />,
-        path: "/admin/settings",
+        text: "Quản lý tòa nhà",
+        icon: <Apartment />,
+        path: "/admin/buildings",
     },
-    { text: "Báo cáo thống kê", icon: <Report />, path: "/admin/reports" },
     {
         text: "Quản lý dịch vụ",
         icon: <MiscellaneousServices />,
         path: "/admin/services",
     },
+    {
+        text: "Quản lý đăng ký",
+        icon: <Subscriptions />,
+        path: "/admin/subscriptions",
+    },
+    {
+        text: "Quản lý hợp đồng",
+        icon: <Description />,
+        path: "/admin/contracts",
+    },
+    {
+        text: "Quản lý thông báo",
+        icon: <Notifications />,
+        path: "/admin/notifications",
+    },
+    { text: "Báo cáo thống kê", icon: <Report />, path: "/admin/reports" },
 ];
 
 const AdminPage = () => {

@@ -17,8 +17,8 @@ model Apartment {
 
   buildingId    String
   building      Building       @relation(fields: [buildingId], references: [id])
-  residentId    String?
-  resident      Resident?      @relation(fields: [residentId], references: [id])
+  residentId    String
+  resident      Resident       @relation(fields: [residentId], references: [id])
   invoices      Invoice[]
   subscriptions Subscription[]
 }
@@ -55,10 +55,10 @@ model InvoiceDetail {
   quantity Int
   total    BigInt
 
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id])
   invoiceId String
-  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  subscriptionId String
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
 }
 
 model Invoice {
@@ -125,6 +125,7 @@ model Service {
   name        String
   description String
 
+  invoiceDetails InvoiceDetail[]
   subscriptions  Subscription[]
 }
 
@@ -141,5 +142,4 @@ model Subscription {
   service     Service   @relation(fields: [serviceId], references: [id])
   apartmentId String
   apartment   Apartment @relation(fields: [apartmentId], references: [id])
-  invoiceDetails InvoiceDetail[]
 }

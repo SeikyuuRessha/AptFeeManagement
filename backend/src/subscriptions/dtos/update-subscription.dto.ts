@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateSubscriptionDTO } from './create-subscription.dto';
+import { PartialType } from "@nestjs/mapped-types";
+import { IsIn, IsOptional } from "class-validator";
+import { CreateSubscriptionDTO } from "./create-subscription.dto";
 
-export class UpdateSubscriptionDTO extends PartialType(CreateSubscriptionDTO) {}
+export class UpdateSubscriptionDTO extends PartialType(CreateSubscriptionDTO) {
+    @IsOptional()
+    @IsIn(["active", "inactive", "pending"])
+    status?: string;
+}

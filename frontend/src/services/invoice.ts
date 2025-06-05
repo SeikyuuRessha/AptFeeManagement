@@ -35,17 +35,25 @@ export interface Payment {
 export interface InvoiceDetail {
     id: string;
     quantity: number;
-    total: number;
+    total: string; // BigInt serialized as string from backend
     serviceId: string;
     invoiceId: string;
+    subscriptionId: string;
     service?: {
+        id: string;
         name: string;
-        unitPrice: number;
+        unitPrice: string; // BigInt serialized as string from backend
     };
     subscription?: {
+        id: string;
+        status: string;
+        serviceId: string;
+        apartmentId: string;
         service: {
+            id: string;
             name: string;
-            unitPrice: number;
+            unitPrice: string; // BigInt serialized as string from backend
+            description: string;
         };
     };
     createdAt: string;

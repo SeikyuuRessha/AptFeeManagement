@@ -2,7 +2,7 @@ import api from "@/config/api";
 
 export interface Service {
     id: string;
-    unitPrice: number;
+    unitPrice: string; // BigInt serialized as string from backend
     name: string;
     description: string;
     createdAt: string;

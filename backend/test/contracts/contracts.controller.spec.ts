@@ -70,18 +70,17 @@ describe("ContractsController", () => {
     describe("createContract", () => {
         createContractTestCases.forEach((testCase) => {
             it(testCase.description, async () => {
-                const mockRequest = {
-                    user: { sub: testCase.residentId },
-                } as any;
+                // Create complete DTO including residentId
+                const createContractDto = {
+                    ...testCase.data,
+                    residentId: testCase.residentId,
+                };
 
                 service.createContract.mockResolvedValue(testCase.expectedResult);
 
-                const result = await controller.createContract(testCase.data, mockRequest);
+                const result = await controller.createContract(createContractDto);
                 expect(result).toEqual(testCase.expectedResult);
-                expect(service.createContract).toHaveBeenCalledWith(
-                    testCase.data,
-                    testCase.residentId
-                );
+                expect(service.createContract).toHaveBeenCalledWith(createContractDto, testCase.residentId);
             });
         });
     });

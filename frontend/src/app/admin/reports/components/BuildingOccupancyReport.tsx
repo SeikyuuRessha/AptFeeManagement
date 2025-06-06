@@ -65,7 +65,7 @@ export const BuildingOccupancyReport: React.FC<
         totalApartments > 0 ? (totalOccupied / totalApartments) * 100 : 0;
 
     const overallChartData = {
-        labels: ["Occupied", "Vacant"],
+        labels: ["Đã thuê", "Trống"],
         datasets: [
             {
                 data: [totalOccupied, totalVacant],
@@ -84,7 +84,7 @@ export const BuildingOccupancyReport: React.FC<
             },
             title: {
                 display: true,
-                text: "Overall Occupancy Distribution",
+                text: "Phân bổ Lấp đầy Tổng thể",
             },
         },
     };
@@ -97,17 +97,18 @@ export const BuildingOccupancyReport: React.FC<
 
     return (
         <Paper sx={{ p: 3, mt: 3 }}>
+            {" "}
             <Typography variant="h6" gutterBottom>
-                Building Occupancy Report
+                Báo cáo Lấp đầy Tòa nhà
             </Typography>
-
             <Grid container spacing={3}>
                 {/* Overall Summary */}
                 <Grid item xs={12} md={4}>
                     <Card>
                         <CardContent>
+                            {" "}
                             <Typography variant="h6" gutterBottom>
-                                Overall Statistics
+                                Thống kê Tổng thể
                             </Typography>
                             <Typography
                                 variant="h4"
@@ -121,17 +122,17 @@ export const BuildingOccupancyReport: React.FC<
                                 color="text.secondary"
                                 gutterBottom
                             >
-                                Overall Occupancy Rate
+                                Tỷ lệ Lấp đầy Tổng thể
                             </Typography>
                             <Box sx={{ mt: 2 }}>
                                 <Typography variant="body2">
-                                    Total Apartments: {totalApartments}
+                                    Tổng Căn hộ: {totalApartments}
                                 </Typography>
                                 <Typography variant="body2">
-                                    Occupied: {totalOccupied}
+                                    Đã thuê: {totalOccupied}
                                 </Typography>
                                 <Typography variant="body2">
-                                    Vacant: {totalVacant}
+                                    Trống: {totalVacant}
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -165,47 +166,48 @@ export const BuildingOccupancyReport: React.FC<
                         <Table>
                             <TableHead>
                                 <TableRow>
+                                    {" "}
                                     <TableCell sx={{ fontWeight: "bold" }}>
-                                        Building
+                                        Tòa nhà
                                     </TableCell>
                                     <TableCell sx={{ fontWeight: "bold" }}>
-                                        Address
+                                        Địa chỉ
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Units
+                                        Tổng Căn hộ
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Occupied
+                                        Đã thuê
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Vacant
+                                        Trống
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Occupancy Rate
+                                        Tỷ lệ Lấp đầy
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Revenue
+                                        Tổng Doanh thu
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Avg Rent
+                                        Tiền thuê TB
                                     </TableCell>
                                 </TableRow>
                             </TableHead>

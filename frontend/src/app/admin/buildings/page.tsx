@@ -124,7 +124,7 @@ const AdminBuildingsPage = () => {
             setApartments(apartmentsData);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to fetch data"
+                err instanceof Error ? err.message : "Không thể tải dữ liệu"
             );
         } finally {
             setLoading(false);
@@ -217,10 +217,12 @@ const AdminBuildingsPage = () => {
         return (
             <Box sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
-                    Building Management
+                    Quản lý Tòa nhà
                 </Typography>
                 <LinearProgress />
-                <Typography sx={{ mt: 2 }}>Loading buildings...</Typography>
+                <Typography sx={{ mt: 2 }}>
+                    Đang tải danh sách tòa nhà...
+                </Typography>
             </Box>
         );
     }
@@ -236,7 +238,7 @@ const AdminBuildingsPage = () => {
                 }}
             >
                 <Typography variant="h4" component="h1">
-                    Building Management
+                    Quản lý Tòa nhà
                 </Typography>
                 <Button
                     variant="contained"
@@ -244,7 +246,7 @@ const AdminBuildingsPage = () => {
                     onClick={() => handleOpenDialog()}
                     sx={{ backgroundColor: "#1976d2" }}
                 >
-                    Add Building
+                    Thêm Tòa nhà
                 </Button>
             </Box>
 
@@ -405,46 +407,46 @@ const AdminBuildingsPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: "bold" }}>
-                                    Name
+                                    Tên
                                 </TableCell>
                                 <TableCell sx={{ fontWeight: "bold" }}>
-                                    Address
+                                    Địa chỉ
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Total Apts
+                                    Tổng CH
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Apartments
+                                    Căn hộ
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Occupied
+                                    Đã thuê
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Occupancy Rate
+                                    Tỷ lệ lấp đầy
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Created
+                                    Ngày tạo
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Actions
+                                    Thao tác
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -545,14 +547,14 @@ const AdminBuildingsPage = () => {
                 fullWidth
             >
                 <DialogTitle>
-                    {editingBuilding ? "Edit Building" : "Add New Building"}
+                    {editingBuilding ? "Chỉnh sửa Tòa nhà" : "Thêm Tòa nhà Mới"}
                 </DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 1 }}>
                         <TextField
                             autoFocus
                             fullWidth
-                            label="Building Name"
+                            label="Tên Tòa nhà"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({
@@ -565,7 +567,7 @@ const AdminBuildingsPage = () => {
                         />
                         <TextField
                             fullWidth
-                            label="Address"
+                            label="Địa chỉ"
                             value={formData.address}
                             onChange={(e) =>
                                 setFormData({
@@ -578,7 +580,7 @@ const AdminBuildingsPage = () => {
                         />
                         <TextField
                             fullWidth
-                            label="Number of Apartments"
+                            label="Số lượng Căn hộ"
                             type="number"
                             value={formData.apartmentCount}
                             onChange={(e) =>
@@ -595,13 +597,13 @@ const AdminBuildingsPage = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={handleCloseDialog}>Hủy</Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
                         disabled={!formData.name || !formData.address}
                     >
-                        {editingBuilding ? "Update" : "Create"}
+                        {editingBuilding ? "Cập nhật" : "Tạo"}
                     </Button>
                 </DialogActions>
             </Dialog>

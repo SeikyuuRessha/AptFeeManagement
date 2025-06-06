@@ -113,7 +113,7 @@ const AdminServicesPage = () => {
             setSubscriptions(subscriptionsData);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to fetch data"
+                err instanceof Error ? err.message : "Không thể tải dữ liệu"
             );
         } finally {
             setLoading(false);
@@ -159,28 +159,28 @@ const AdminServicesPage = () => {
             if (editingService) {
                 // Update service
                 await updateService(editingService.id, formData);
-                setSuccess("Service updated successfully");
+                setSuccess("Cập nhật dịch vụ thành công");
             } else {
                 // Create service
                 await createService(formData);
-                setSuccess("Service created successfully");
+                setSuccess("Tạo dịch vụ thành công");
             }
 
             handleCloseDialog();
             await fetchData();
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Operation failed");
+            setError(err instanceof Error ? err.message : "Thao tác thất bại");
         }
     };
 
     const handleDelete = async (serviceId: string) => {
-        if (window.confirm("Are you sure you want to delete this service?")) {
+        if (window.confirm("Bạn có chắc chắn muốn xóa dịch vụ này không?")) {
             try {
                 await deleteService(serviceId);
-                setSuccess("Service deleted successfully");
+                setSuccess("Xóa dịch vụ thành công");
                 await fetchData();
             } catch (err) {
-                setError(err instanceof Error ? err.message : "Delete failed");
+                setError(err instanceof Error ? err.message : "Xóa thất bại");
             }
         }
     };
@@ -213,10 +213,12 @@ const AdminServicesPage = () => {
         return (
             <Box sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
-                    Service Management
+                    Quản lý Dịch vụ
                 </Typography>
                 <LinearProgress />
-                <Typography sx={{ mt: 2 }}>Loading services...</Typography>
+                <Typography sx={{ mt: 2 }}>
+                    Đang tải danh sách dịch vụ...
+                </Typography>
             </Box>
         );
     }
@@ -232,7 +234,7 @@ const AdminServicesPage = () => {
                 }}
             >
                 <Typography variant="h4" component="h1">
-                    Service Management
+                    Quản lý Dịch vụ
                 </Typography>
                 <Button
                     variant="contained"
@@ -240,7 +242,7 @@ const AdminServicesPage = () => {
                     onClick={() => handleOpenDialog()}
                     sx={{ backgroundColor: "#1976d2" }}
                 >
-                    Add Service
+                    Thêm Dịch vụ
                 </Button>
             </Box>
 
@@ -289,7 +291,7 @@ const AdminServicesPage = () => {
                                         {totalServices}
                                     </Typography>
                                     <Typography color="text.secondary">
-                                        Total Services
+                                        Tổng Dịch vụ
                                     </Typography>
                                 </Box>
                             </Box>
@@ -315,7 +317,7 @@ const AdminServicesPage = () => {
                                         {totalSubscriptions}
                                     </Typography>
                                     <Typography color="text.secondary">
-                                        Total Subscriptions
+                                        Tổng Đăng ký
                                     </Typography>
                                 </Box>
                             </Box>
@@ -341,7 +343,7 @@ const AdminServicesPage = () => {
                                         {totalActiveSubscriptions}
                                     </Typography>
                                     <Typography color="text.secondary">
-                                        Active Subscriptions
+                                        Đăng ký Hoạt động
                                     </Typography>
                                 </Box>
                             </Box>
@@ -357,40 +359,40 @@ const AdminServicesPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: "bold" }}>
-                                    Service Name
+                                    Tên Dịch vụ
                                 </TableCell>
                                 <TableCell sx={{ fontWeight: "bold" }}>
-                                    Description
+                                    Mô tả
                                 </TableCell>
                                 <TableCell
                                     align="right"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Unit Price
+                                    Đơn giá
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Total Subs
+                                    Tổng ĐK
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Active Subs
+                                    ĐK Hoạt động
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Created
+                                    Ngày tạo
                                 </TableCell>
                                 <TableCell
                                     align="center"
                                     sx={{ fontWeight: "bold" }}
                                 >
-                                    Actions
+                                    Thao tác
                                 </TableCell>
                             </TableRow>
                         </TableHead>
@@ -403,8 +405,8 @@ const AdminServicesPage = () => {
                                         sx={{ py: 4 }}
                                     >
                                         <Typography color="text.secondary">
-                                            No services found. Click "Add
-                                            Service" to create one.
+                                            Không tìm thấy dịch vụ nào. Nhấp
+                                            "Thêm Dịch vụ" để tạo mới.
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
@@ -488,14 +490,14 @@ const AdminServicesPage = () => {
                 fullWidth
             >
                 <DialogTitle>
-                    {editingService ? "Edit Service" : "Add New Service"}
+                    {editingService ? "Chỉnh sửa dịch vụ" : "Thêm dịch vụ mới"}
                 </DialogTitle>
                 <DialogContent>
                     <Box sx={{ pt: 1 }}>
                         <TextField
                             autoFocus
                             fullWidth
-                            label="Service Name"
+                            label="Tên dịch vụ"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({
@@ -508,7 +510,7 @@ const AdminServicesPage = () => {
                         />
                         <TextField
                             fullWidth
-                            label="Description"
+                            label="Mô tả"
                             value={formData.description}
                             onChange={(e) =>
                                 setFormData({
@@ -523,7 +525,7 @@ const AdminServicesPage = () => {
                         />
                         <TextField
                             fullWidth
-                            label="Unit Price"
+                            label="Đơn giá"
                             type="number"
                             value={formData.unitPrice}
                             onChange={(e) =>
@@ -546,7 +548,7 @@ const AdminServicesPage = () => {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={handleCloseDialog}>Hủy</Button>
                     <Button
                         onClick={handleSubmit}
                         variant="contained"
@@ -556,7 +558,7 @@ const AdminServicesPage = () => {
                             !formData.unitPrice
                         }
                     >
-                        {editingService ? "Update" : "Create"}
+                        {editingService ? "Cập nhật" : "Tạo mới"}
                     </Button>
                 </DialogActions>
             </Dialog>

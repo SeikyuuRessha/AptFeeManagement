@@ -96,7 +96,7 @@ export default function NotificationsManagement() {
             setError(
                 err instanceof Error
                     ? err.message
-                    : "Failed to fetch notifications"
+                    : "Không thể tải danh sách thông báo"
             );
         } finally {
             setLoading(false);
@@ -126,7 +126,7 @@ export default function NotificationsManagement() {
             setError(null);
 
             if (!formData.message.trim()) {
-                setError("Message is required");
+                setError("Nội dung thông báo là bắt buộc");
                 return;
             }
 
@@ -134,14 +134,12 @@ export default function NotificationsManagement() {
                 message: formData.message.trim(),
             });
 
-            setSuccess("Notification sent successfully");
+            setSuccess("Gửi thông báo thành công");
             handleCloseDialog();
             await fetchData();
         } catch (err) {
             setError(
-                err instanceof Error
-                    ? err.message
-                    : "Failed to send notification"
+                err instanceof Error ? err.message : "Không thể gửi thông báo"
             );
         }
     };

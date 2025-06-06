@@ -89,10 +89,10 @@ const UpdateModal: FC<UpdateModalProps> = ({
                             name="fullName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Full Name</FormLabel>
+                                    <FormLabel>Họ và tên</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
+                                            placeholder="Nhập họ và tên"
                                             {...field}
                                         />
                                     </FormControl>
@@ -110,7 +110,7 @@ const UpdateModal: FC<UpdateModalProps> = ({
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
+                                            placeholder="Nhập email"
                                             {...field}
                                         />
                                     </FormControl>
@@ -125,10 +125,10 @@ const UpdateModal: FC<UpdateModalProps> = ({
                             name="phone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Phone Number</FormLabel>
+                                    <FormLabel>Số điện thoại</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
+                                            placeholder="Nhập số điện thoại"
                                             {...field}
                                         />
                                     </FormControl>
@@ -143,10 +143,10 @@ const UpdateModal: FC<UpdateModalProps> = ({
                             name="role"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Role</FormLabel>
+                                    <FormLabel>Chức vụ</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
+                                            placeholder="Chọn chức vụ"
                                             {...field}
                                         />
                                     </FormControl>
@@ -161,7 +161,7 @@ const UpdateModal: FC<UpdateModalProps> = ({
                             disabled={updateDisabled}
                             className="w-full primary-bg"
                         >
-                            Update
+                            Cập nhật
                         </Button>
                     </form>
                 </Form>

@@ -113,13 +113,13 @@ const UserRow: FC<UserRowProps> = ({
                             value="admin"
                             className="text-gray-900 bg-white"
                         >
-                            Admin
+                            Quản trị viên
                         </option>
                         <option
                             value="resident"
                             className="text-gray-900 bg-white"
                         >
-                            Resident
+                            Cư dân
                         </option>
                     </select>
                 </div>

@@ -177,11 +177,10 @@ export const ApartmentManagementTable: React.FC = () => {
             <Cancel sx={{ color: "#f44336", fontSize: 20 }} />
         );
     };
-
     const getStatusChip = (status: "occupied" | "vacant") => {
         return (
             <Chip
-                label={status === "occupied" ? "Occupied" : "Vacant"}
+                label={status === "occupied" ? "Đã thuê" : "Trống"}
                 color={status === "occupied" ? "success" : "warning"}
                 size="small"
                 icon={getStatusIcon(status)}
@@ -192,7 +191,7 @@ export const ApartmentManagementTable: React.FC = () => {
     if (loading) {
         return (
             <Paper sx={{ mt: 3, p: 3, textAlign: "center" }}>
-                <Typography>Loading apartments...</Typography>
+                <Typography>Đang tải danh sách căn hộ...</Typography>
             </Paper>
         );
     }
@@ -227,28 +226,29 @@ export const ApartmentManagementTable: React.FC = () => {
                     />
                 </Grid>
                 <Grid item xs={12} md={4}>
+                    {" "}
                     <FormControl fullWidth size="small">
-                        <InputLabel>Status</InputLabel>
+                        <InputLabel>Trạng thái</InputLabel>
                         <Select
                             value={statusFilter}
-                            label="Status"
+                            label="Trạng thái"
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
-                            <MenuItem value="all">All Statuses</MenuItem>
-                            <MenuItem value="occupied">Occupied</MenuItem>
-                            <MenuItem value="vacant">Vacant</MenuItem>
+                            <MenuItem value="all">Tất cả trạng thái</MenuItem>
+                            <MenuItem value="occupied">Đã thuê</MenuItem>
+                            <MenuItem value="vacant">Trống</MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <FormControl fullWidth size="small">
-                        <InputLabel>Building</InputLabel>
+                        <InputLabel>Tòa nhà</InputLabel>
                         <Select
                             value={buildingFilter}
-                            label="Building"
+                            label="Tòa nhà"
                             onChange={(e) => setBuildingFilter(e.target.value)}
                         >
-                            <MenuItem value="all">All Buildings</MenuItem>
+                            <MenuItem value="all">Tất cả tòa nhà</MenuItem>
                             {uniqueBuildings.map((building) => (
                                 <MenuItem key={building} value={building}>
                                     {building}
@@ -464,7 +464,7 @@ export const ApartmentManagementTable: React.FC = () => {
                                             color="text.secondary"
                                             sx={{ fontStyle: "italic" }}
                                         >
-                                            No resident
+                                            Chưa có cư dân
                                         </Typography>
                                     )}
                                 </TableCell>

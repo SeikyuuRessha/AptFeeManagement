@@ -208,7 +208,7 @@ export default function SubscriptionsManagement() {
             setBuildings(buildingsData);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to fetch data"
+                err instanceof Error ? err.message : "Không thể tải dữ liệu"
             );
         } finally {
             setLoading(false);
@@ -627,7 +627,7 @@ export default function SubscriptionsManagement() {
                                                         </TableCell>
                                                         <TableCell align="center">
                                                             {" "}
-                                                            <Tooltip title="Edit">
+                                                            <Tooltip title="Chỉnh sửa">
                                                                 <IconButton
                                                                     color="primary"
                                                                     disabled={
@@ -642,7 +642,7 @@ export default function SubscriptionsManagement() {
                                                                     <EditIcon />
                                                                 </IconButton>
                                                             </Tooltip>
-                                                            <Tooltip title="Delete">
+                                                            <Tooltip title="Xóa">
                                                                 <IconButton
                                                                     color="error"
                                                                     disabled={
@@ -675,10 +675,11 @@ export default function SubscriptionsManagement() {
                     maxWidth="sm"
                     fullWidth
                 >
+                    {" "}
                     <DialogTitle>
                         {editingSubscription
-                            ? "Edit Subscription"
-                            : "Add New Subscription"}
+                            ? "Chỉnh sửa Đăng ký"
+                            : "Thêm Đăng ký Mới"}
                     </DialogTitle>
                     <DialogContent>
                         <Box
@@ -774,13 +775,13 @@ export default function SubscriptionsManagement() {
                                                                     apartment.id
                                                                 }
                                                             >
-                                                                Room{" "}
+                                                                Phòng{" "}
                                                                 {
                                                                     apartment.roomNumber
                                                                 }{" "}
                                                                 -{" "}
                                                                 {building?.name ||
-                                                                    "Unknown Building"}
+                                                                    "Tòa nhà không xác định"}
                                                             </MenuItem>
                                                         );
                                                     })
@@ -788,9 +789,9 @@ export default function SubscriptionsManagement() {
                                         </Select>
                                     </FormControl>
                                 </>
-                            )}
+                            )}{" "}
                             <FormControl fullWidth>
-                                <InputLabel>Frequency</InputLabel>
+                                <InputLabel>Tần suất</InputLabel>
                                 <Select
                                     value={formData.frequency}
                                     onChange={(e) =>
@@ -799,7 +800,7 @@ export default function SubscriptionsManagement() {
                                             frequency: e.target.value,
                                         })
                                     }
-                                    label="Frequency"
+                                    label="Tần suất"
                                 >
                                     {FREQUENCY_OPTIONS.map((option) => (
                                         <MenuItem
@@ -812,7 +813,7 @@ export default function SubscriptionsManagement() {
                                 </Select>
                             </FormControl>{" "}
                             <DatePicker
-                                label="Next Billing Date"
+                                label="Ngày thanh toán tiếp theo"
                                 value={formData.nextBillingDate}
                                 onChange={(newValue) =>
                                     setFormData({
@@ -828,7 +829,7 @@ export default function SubscriptionsManagement() {
                             />
                             {editingSubscription && (
                                 <FormControl fullWidth>
-                                    <InputLabel>Status</InputLabel>
+                                    <InputLabel>Trạng thái</InputLabel>
                                     <Select
                                         value={formData.status}
                                         onChange={(e) =>
@@ -837,7 +838,7 @@ export default function SubscriptionsManagement() {
                                                 status: e.target.value,
                                             })
                                         }
-                                        label="Status"
+                                        label="Trạng thái"
                                     >
                                         {STATUS_OPTIONS.map((option) => (
                                             <MenuItem
@@ -851,9 +852,9 @@ export default function SubscriptionsManagement() {
                                 </FormControl>
                             )}
                         </Box>
-                    </DialogContent>
+                    </DialogContent>{" "}
                     <DialogActions>
-                        <Button onClick={handleCloseDialog}>Cancel</Button>{" "}
+                        <Button onClick={handleCloseDialog}>Hủy</Button>{" "}
                         <Button
                             onClick={handleSave}
                             variant="contained"
@@ -865,7 +866,7 @@ export default function SubscriptionsManagement() {
                                         .length === 0)
                             }
                         >
-                            {editingSubscription ? "Update" : "Create"}
+                            {editingSubscription ? "Cập nhật" : "Tạo mới"}
                         </Button>
                     </DialogActions>
                 </Dialog>

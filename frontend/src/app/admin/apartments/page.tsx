@@ -38,7 +38,7 @@ const AdminApartmentPage = () => {
                 setBuildings(buildingData);
             } catch (error) {
                 console.error("Error fetching buildings:", error);
-                setMessage("Failed to load buildings");
+                setMessage("Không thể tải danh sách tòa nhà");
                 setIsError(true);
             }
         };
@@ -75,7 +75,7 @@ const AdminApartmentPage = () => {
             setArea("");
             setSelectedBuildingId("");
         } catch (error: any) {
-            setMessage(error.message || "Failed to create apartment");
+            setMessage(error.message || "Không thể tạo căn hộ");
             setIsError(true);
         } finally {
             setLoading(false);
@@ -90,28 +90,28 @@ const AdminApartmentPage = () => {
         <Card>
             <CardContent>
                 <Typography variant="h6" gutterBottom>
-                    Create New Apartment
+                    Tạo Căn hộ Mới
                 </Typography>
                 <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ mb: 3 }}
                 >
-                    New apartments are automatically created as vacant and ready
-                    for resident assignment.
+                    Căn hộ mới sẽ được tự động tạo ở trạng thái trống và sẵn
+                    sàng để phân công cho cư dân.
                 </Typography>
 
                 <Box component="form" onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
-                                <InputLabel>Building</InputLabel>
+                                <InputLabel>Tòa nhà</InputLabel>
                                 <Select
                                     value={selectedBuildingId}
                                     onChange={(e) =>
                                         setSelectedBuildingId(e.target.value)
                                     }
-                                    label="Building"
+                                    label="Tòa nhà"
                                 >
                                     {buildings.map((building) => (
                                         <MenuItem
@@ -128,22 +128,22 @@ const AdminApartmentPage = () => {
                         <Grid item xs={12} md={3}>
                             <TextField
                                 fullWidth
-                                label="Room Number"
+                                label="Số phòng"
                                 type="number"
                                 value={roomNumber}
                                 onChange={(e) => setRoomNumber(e.target.value)}
-                                placeholder="e.g., 101"
+                                placeholder="vd: 101"
                             />
                         </Grid>
 
                         <Grid item xs={12} md={3}>
                             <TextField
                                 fullWidth
-                                label="Area (m²)"
+                                label="Diện tích (m²)"
                                 type="number"
                                 value={area}
                                 onChange={(e) => setArea(e.target.value)}
-                                placeholder="e.g., 75.5"
+                                placeholder="vd: 75.5"
                             />
                         </Grid>
 
@@ -159,9 +159,7 @@ const AdminApartmentPage = () => {
                                 }
                                 sx={{ mt: 1 }}
                             >
-                                {loading
-                                    ? "Creating..."
-                                    : "Create Vacant Apartment"}
+                                {loading ? "Đang tạo..." : "Tạo Căn hộ Trống"}
                             </Button>
                         </Grid>
                     </Grid>
@@ -173,7 +171,7 @@ const AdminApartmentPage = () => {
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h4" gutterBottom>
-                Apartments Management
+                Quản lý Căn hộ
             </Typography>
 
             {message && (
@@ -192,8 +190,8 @@ const AdminApartmentPage = () => {
                 }}
             >
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                    <Tab label="Create Apartment" />
-                    <Tab label="Manage Apartments" />
+                    <Tab label="Tạo Căn hộ" />
+                    <Tab label="Quản lý Căn hộ" />
                 </Tabs>
             </Box>
 

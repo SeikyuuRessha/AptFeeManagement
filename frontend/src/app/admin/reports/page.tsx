@@ -162,10 +162,10 @@ const Reports = () => {
                     gutterBottom
                     color="text.primary"
                 >
-                    Reports Dashboard
+                    Bảng điều khiển Báo cáo
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                    View and analyze financial and apartment reports
+                    Xem và phân tích báo cáo tài chính và căn hộ
                 </Typography>
             </Box>
 
@@ -173,44 +173,42 @@ const Reports = () => {
                 <Grid container spacing={3} alignItems="center">
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel>Report Type</InputLabel>
+                            <InputLabel>Loại Báo cáo</InputLabel>
                             <Select
                                 value={selectedReport}
-                                label="Report Type"
+                                label="Loại Báo cáo"
                                 onChange={handleReportChange}
                             >
                                 <MenuItem value="financial">
-                                    Financial Report
+                                    Báo cáo Tài chính
                                 </MenuItem>
                                 <MenuItem value="apartment">
-                                    Apartment Report
+                                    Báo cáo Căn hộ
                                 </MenuItem>
                                 <MenuItem value="service-usage">
-                                    Service Usage Report
+                                    Báo cáo Sử dụng Dịch vụ
                                 </MenuItem>
                                 <MenuItem value="building-occupancy">
-                                    Building Occupancy Report
+                                    Báo cáo Lấp đầy Tòa nhà
                                 </MenuItem>
                                 <MenuItem value="payment-analytics">
-                                    Payment Analytics Report
+                                    Báo cáo Phân tích Thanh toán
                                 </MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <FormControl fullWidth>
-                            <InputLabel>Date Range</InputLabel>
+                            <InputLabel>Khoảng thời gian</InputLabel>
                             <Select
                                 value={dateRange}
-                                label="Date Range"
+                                label="Khoảng thời gian"
                                 onChange={handleDateRangeChange}
                             >
-                                <MenuItem value="week">This Week</MenuItem>
-                                <MenuItem value="month">This Month</MenuItem>
-                                <MenuItem value="quarter">
-                                    This Quarter
-                                </MenuItem>
-                                <MenuItem value="year">This Year</MenuItem>
+                                <MenuItem value="week">Tuần này</MenuItem>
+                                <MenuItem value="month">Tháng này</MenuItem>
+                                <MenuItem value="quarter">Quý này</MenuItem>
+                                <MenuItem value="year">Năm này</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>

@@ -166,7 +166,7 @@ export default function ContractsManagement() {
             setResidents(residentsData);
         } catch (err) {
             setError(
-                err instanceof Error ? err.message : "Failed to fetch data"
+                err instanceof Error ? err.message : "Không thể tải dữ liệu"
             );
         } finally {
             setLoading(false);
@@ -501,26 +501,28 @@ export default function ContractsManagement() {
                     </Typography>
                     <TableContainer component={Paper}>
                         <Table>
+                            {" "}
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Resident</TableCell>
-                                    <TableCell>Contact</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell>Document Path</TableCell>
-                                    <TableCell>Created</TableCell>
+                                    <TableCell>Cư dân</TableCell>
+                                    <TableCell>Liên hệ</TableCell>
+                                    <TableCell>Trạng thái</TableCell>
+                                    <TableCell>Đường dẫn tài liệu</TableCell>
+                                    <TableCell>Ngày tạo</TableCell>
                                     <TableCell align="center">
-                                        Actions
+                                        Thao tác
                                     </TableCell>
                                 </TableRow>
                             </TableHead>{" "}
                             <TableBody>
                                 {filteredContracts.length === 0 ? (
                                     <TableRow>
+                                        {" "}
                                         <TableCell colSpan={6} align="center">
                                             <Typography color="text.secondary">
                                                 {searchQuery.trim()
-                                                    ? "No contracts found matching your search"
-                                                    : "No contracts found"}
+                                                    ? "Không tìm thấy hợp đồng nào khớp với tìm kiếm"
+                                                    : "Không tìm thấy hợp đồng nào"}
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
@@ -599,7 +601,7 @@ export default function ContractsManagement() {
                                                     )}
                                                 </TableCell>
                                                 <TableCell align="center">
-                                                    <Tooltip title="Edit">
+                                                    <Tooltip title="Chỉnh sửa">
                                                         <IconButton
                                                             color="primary"
                                                             onClick={() =>
@@ -611,7 +613,7 @@ export default function ContractsManagement() {
                                                             <EditIcon />
                                                         </IconButton>
                                                     </Tooltip>
-                                                    <Tooltip title="Delete">
+                                                    <Tooltip title="Xóa">
                                                         <IconButton
                                                             color="error"
                                                             onClick={() =>
@@ -656,10 +658,10 @@ export default function ContractsManagement() {
                     >
                         {!editingContract && (
                             <FormControl fullWidth>
-                                <InputLabel>Resident</InputLabel>
+                                <InputLabel>Cư dân</InputLabel>
                                 <Select
                                     value={formData.residentId}
-                                    label="Resident"
+                                    label="Cư dân"
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
@@ -681,10 +683,11 @@ export default function ContractsManagement() {
                         )}
 
                         <FormControl fullWidth>
-                            <InputLabel>Status</InputLabel>
+                            {" "}
+                            <InputLabel>Trạng thái</InputLabel>
                             <Select
                                 value={formData.status}
-                                label="Status"
+                                label="Trạng thái"
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
@@ -705,7 +708,7 @@ export default function ContractsManagement() {
 
                         <TextField
                             fullWidth
-                            label="Document Path"
+                            label="Đường dẫn tài liệu"
                             value={formData.documentPath}
                             onChange={(e) =>
                                 setFormData({

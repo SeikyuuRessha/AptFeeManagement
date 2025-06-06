@@ -79,21 +79,21 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
         labels: data.map((service) => service.serviceName),
         datasets: [
             {
-                label: "Active Subscriptions",
+                label: "Đăng ký Hoạt động",
                 data: data.map((service) => service.activeSubscriptions),
                 backgroundColor: "rgba(76, 175, 80, 0.8)",
                 borderColor: "rgba(76, 175, 80, 1)",
                 borderWidth: 1,
             },
             {
-                label: "Inactive Subscriptions",
+                label: "Đăng ký Không hoạt động",
                 data: data.map((service) => service.inactiveSubscriptions),
                 backgroundColor: "rgba(158, 158, 158, 0.8)",
                 borderColor: "rgba(158, 158, 158, 1)",
                 borderWidth: 1,
             },
             {
-                label: "Total Revenue (millions VND)",
+                label: "Tổng Doanh thu (triệu VND)",
                 data: data.map((service) => service.totalRevenue / 1000000),
                 backgroundColor: "rgba(54, 162, 235, 0.8)",
                 borderColor: "rgba(54, 162, 235, 1)",
@@ -115,7 +115,7 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
             },
             title: {
                 display: true,
-                text: "Service Usage & Revenue Overview",
+                text: "Tổng quan Sử dụng Dịch vụ & Doanh thu",
             },
             tooltip: {
                 callbacks: {
@@ -139,7 +139,7 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: "Subscriptions",
+                    text: "Đăng ký",
                 },
             },
             y1: {
@@ -149,7 +149,7 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: "Revenue (millions VND)",
+                    text: "Doanh thu (triệu VND)",
                 },
                 grid: {
                     drawOnChartArea: false,
@@ -160,10 +160,10 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
 
     return (
         <Paper sx={{ p: 3, mt: 3 }}>
+            {" "}
             <Typography variant="h6" gutterBottom>
-                Service Usage Report
+                Báo cáo Sử dụng Dịch vụ
             </Typography>
-
             <Grid container spacing={3}>
                 {/* Summary Cards */}
                 <Grid item xs={12}>
@@ -186,8 +186,9 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                                             {service.serviceName}
                                         </Typography>
                                         <Box sx={{ mb: 2 }}>
+                                            {" "}
                                             <Chip
-                                                label={`${service.activeSubscriptions} Active`}
+                                                label={`${service.activeSubscriptions} Hoạt động`}
                                                 color="success"
                                                 size="small"
                                                 sx={{ mr: 1 }}
@@ -195,17 +196,17 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                                             {service.inactiveSubscriptions >
                                                 0 && (
                                                 <Chip
-                                                    label={`${service.inactiveSubscriptions} Inactive`}
+                                                    label={`${service.inactiveSubscriptions} Không hoạt động`}
                                                     color="default"
                                                     size="small"
                                                 />
                                             )}
-                                        </Box>
+                                        </Box>{" "}
                                         <Typography
                                             variant="body2"
                                             color="text.secondary"
                                         >
-                                            Revenue:{" "}
+                                            Doanh thu:{" "}
                                             {formatCurrency(
                                                 service.totalRevenue
                                             )}
@@ -214,9 +215,9 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                                             variant="body2"
                                             color="text.secondary"
                                         >
-                                            Avg Usage:{" "}
+                                            Sử dụng TB:{" "}
                                             {service.averageUsage.toFixed(1)}{" "}
-                                            units
+                                            đơn vị
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -238,38 +239,39 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                         <Table>
                             <TableHead>
                                 <TableRow>
+                                    {" "}
                                     <TableCell sx={{ fontWeight: "bold" }}>
-                                        Service
+                                        Dịch vụ
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Subscriptions
+                                        Tổng Đăng ký
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Active
+                                        Hoạt động
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Inactive
+                                        Không hoạt động
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Revenue
+                                        Tổng Doanh thu
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Average Usage
+                                        Sử dụng Trung bình
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
@@ -319,10 +321,10 @@ export const ServiceUsageReport: React.FC<ServiceUsageReportProps> = ({
                                             {formatCurrency(
                                                 service.totalRevenue
                                             )}
-                                        </TableCell>
+                                        </TableCell>{" "}
                                         <TableCell align="right">
                                             {service.averageUsage.toFixed(2)}{" "}
-                                            units
+                                            đơn vị
                                         </TableCell>
                                     </TableRow>
                                 ))}

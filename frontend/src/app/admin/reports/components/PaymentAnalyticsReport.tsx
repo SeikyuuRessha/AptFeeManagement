@@ -82,7 +82,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
         labels: data.map((month) => month.month),
         datasets: [
             {
-                label: "Total Amount (millions VND)",
+                label: "Tổng Số tiền (triệu VND)",
                 data: data.map((month) => month.totalAmount / 1000000),
                 borderColor: "rgb(75, 192, 192)",
                 backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -90,7 +90,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                 yAxisID: "y",
             },
             {
-                label: "Number of Payments",
+                label: "Số lượng Thanh toán",
                 data: data.map((month) => month.totalPayments),
                 borderColor: "rgb(255, 99, 132)",
                 backgroundColor: "rgba(255, 99, 132, 0.2)",
@@ -109,7 +109,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
         plugins: {
             title: {
                 display: true,
-                text: "Payment Trends Over Time",
+                text: "Xu hướng Thanh toán theo Thời gian",
             },
         },
         scales: {
@@ -117,7 +117,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                 display: true,
                 title: {
                     display: true,
-                    text: "Month",
+                    text: "Tháng",
                 },
             },
             y: {
@@ -126,7 +126,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                 position: "left" as const,
                 title: {
                     display: true,
-                    text: "Amount (millions VND)",
+                    text: "Số tiền (triệu VND)",
                 },
             },
             y1: {
@@ -135,7 +135,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                 position: "right" as const,
                 title: {
                     display: true,
-                    text: "Number of Payments",
+                    text: "Số lượng Thanh toán",
                 },
                 grid: {
                     drawOnChartArea: false,
@@ -146,10 +146,10 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
 
     return (
         <Paper sx={{ p: 3, mt: 3 }}>
+            {" "}
             <Typography variant="h6" gutterBottom>
-                Payment Analytics Report
+                Báo cáo Phân tích Thanh toán
             </Typography>
-
             <Grid container spacing={3}>
                 {/* Summary Cards */}
                 <Grid item xs={12}>
@@ -157,12 +157,13 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                         <Grid item xs={12} sm={6} md={3}>
                             <Card>
                                 <CardContent>
+                                    {" "}
                                     <Typography
                                         variant="h6"
                                         component="div"
                                         gutterBottom
                                     >
-                                        Total Payments
+                                        Tổng Thanh toán
                                     </Typography>
                                     <Typography variant="h4" color="primary">
                                         {totalPayments}
@@ -171,7 +172,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        All time payments
+                                        Tất cả thanh toán
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -179,12 +180,13 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                         <Grid item xs={12} sm={6} md={3}>
                             <Card>
                                 <CardContent>
+                                    {" "}
                                     <Typography
                                         variant="h6"
                                         component="div"
                                         gutterBottom
                                     >
-                                        Total Amount
+                                        Tổng Số tiền
                                     </Typography>
                                     <Typography
                                         variant="h5"
@@ -196,7 +198,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Revenue collected
+                                        Doanh thu thu được
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -204,12 +206,13 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                         <Grid item xs={12} sm={6} md={3}>
                             <Card>
                                 <CardContent>
+                                    {" "}
                                     <Typography
                                         variant="h6"
                                         component="div"
                                         gutterBottom
                                     >
-                                        On-Time Rate
+                                        Tỷ lệ Đúng hạn
                                     </Typography>
                                     <Typography
                                         variant="h4"
@@ -225,7 +228,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        {totalOnTime} on time, {totalLate} late
+                                        {totalOnTime} đúng hạn, {totalLate} trễ
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -233,12 +236,13 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                         <Grid item xs={12} sm={6} md={3}>
                             <Card>
                                 <CardContent>
+                                    {" "}
                                     <Typography
                                         variant="h6"
                                         component="div"
                                         gutterBottom
                                     >
-                                        Average Payment
+                                        Thanh toán Trung bình
                                     </Typography>
                                     <Typography variant="h5" color="info.main">
                                         {formatCurrency(
@@ -249,7 +253,7 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                                         variant="body2"
                                         color="text.secondary"
                                     >
-                                        Per transaction
+                                        Mỗi giao dịch
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -274,32 +278,33 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                         <Table>
                             <TableHead>
                                 <TableRow>
+                                    {" "}
                                     <TableCell sx={{ fontWeight: "bold" }}>
-                                        Month
+                                        Tháng
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Payments
+                                        Tổng Thanh toán
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Total Amount
+                                        Tổng Số tiền
                                     </TableCell>
                                     <TableCell
                                         align="right"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        Average Payment
+                                        Thanh toán TB
                                     </TableCell>
                                     <TableCell
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        On Time
+                                        Đúng hạn
                                     </TableCell>
                                     <TableCell
                                         align="center"
@@ -311,7 +316,8 @@ export const PaymentAnalyticsReport: React.FC<PaymentAnalyticsReportProps> = ({
                                         align="center"
                                         sx={{ fontWeight: "bold" }}
                                     >
-                                        On-Time Rate
+                                        {" "}
+                                        Tỷ lệ Đúng hạn
                                     </TableCell>
                                 </TableRow>
                             </TableHead>

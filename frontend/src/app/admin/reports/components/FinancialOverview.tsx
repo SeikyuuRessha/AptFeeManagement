@@ -64,20 +64,21 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
 
     return (
         <Grid container spacing={3} sx={{ mb: 3 }}>
+            {" "}
             <Grid item xs={12} sm={6} md={3}>
                 <StatCard
-                    title="Total Revenue"
+                    title="Tổng Doanh thu"
                     value={formatCurrency(data.totalRevenue)}
                     icon={<MonetizationOn fontSize="large" />}
                     color="#4caf50"
                     trend={`${
                         data.monthlyGrowth > 0 ? "+" : ""
-                    }${data.monthlyGrowth.toFixed(1)}% from last month`}
+                    }${data.monthlyGrowth.toFixed(1)}% so với tháng trước`}
                 />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
                 <StatCard
-                    title="Outstanding Debt"
+                    title="Nợ Chưa thu"
                     value={formatCurrency(totalDebt)}
                     icon={<Receipt fontSize="large" />}
                     color="#f44336"
@@ -85,7 +86,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
                 <StatCard
-                    title="Monthly Growth"
+                    title="Tăng trưởng Tháng"
                     value={`${data.monthlyGrowth.toFixed(1)}%`}
                     icon={<TrendingUp fontSize="large" />}
                     color={data.monthlyGrowth >= 0 ? "#4caf50" : "#f44336"}
@@ -93,7 +94,7 @@ export const FinancialOverview: React.FC<FinancialOverviewProps> = ({
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
                 <StatCard
-                    title="Debt Cases"
+                    title="Trường hợp Nợ"
                     value={data.debt.length.toString()}
                     icon={<Receipt fontSize="large" />}
                     color="#ff9800"

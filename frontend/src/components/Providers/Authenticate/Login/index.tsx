@@ -69,7 +69,7 @@ const Login = () => {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="shadcn"
+                                            placeholder="Nhập email của bạn"
                                             {...field}
                                         />
                                     </FormControl>
@@ -84,11 +84,11 @@ const Login = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>Mật khẩu</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="password"
-                                            placeholder="shadcn"
+                                            placeholder="Nhập mật khẩu"
                                             {...field}
                                         />
                                     </FormControl>
@@ -103,7 +103,7 @@ const Login = () => {
                             disabled={disabled}
                             type="submit"
                         >
-                            Submit
+                            Đăng nhập
                         </Button>
                     </form>
                 </Form>

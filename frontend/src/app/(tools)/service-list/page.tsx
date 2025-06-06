@@ -26,11 +26,45 @@ const ServiceList = () => {
 	useEffect(() => {
 		// Simulate fetching data from backend
 		const fetchData = async () => {
-			// Replace this with actual API call
+			// Replace this with actual API call for apartment fee management services
 			const data = [
-				{ id: 1, name: "Dịch vụ 1", description: "Mô tả dịch vụ 1" },
-				{ id: 2, name: "Dịch vụ 2", description: "Mô tả dịch vụ 2" },
-				{ id: 3, name: "Dịch vụ 3", description: "Mô tả dịch vụ 3" },
+				{
+					id: 1,
+					name: "Thu Phí Định Kỳ & Phát Hành Hóa Đơn",
+					description:
+						"Quản lý việc thu các loại phí dịch vụ hàng tháng/quý (phí quản lý, nước, xe...) và phát hành hóa đơn điện tử cho cư dân.",
+				},
+				{
+					id: 2,
+					name: "Thông Báo & Nhắc Nợ Tự Động",
+					description:
+						"Hệ thống gửi thông báo phí, nhắc nhở thanh toán tự động khi đến hạn hoặc quá hạn, giúp giảm thiểu công nợ.",
+				},
+				{
+					id: 3,
+					name: "Quản Lý Thanh Toán Đa Kênh",
+					description:
+						"Hỗ trợ nhiều hình thức thanh toán tiện lợi cho cư dân: trực tuyến qua cổng thanh toán, chuyển khoản, ví điện tử.",
+				},
+				{
+					id: 4,
+					name: "Báo Cáo Tài Chính & Công Nợ Chi Tiết",
+					description:
+						"Cung cấp báo cáo thu chi, tình hình công nợ, và các số liệu tài chính khác một cách minh bạch, dễ theo dõi.",
+				},
+				{
+					id: 5,
+					name: "Hỗ Trợ Cư Dân Về Phí Dịch Vụ",
+					description:
+						"Giải đáp thắc mắc, tiếp nhận và xử lý các yêu cầu, khiếu nại của cư dân liên quan đến các khoản phí và thanh toán.",
+				},
+				{
+					id: 6,
+					name: "Quản Lý Quỹ Bảo Trì Chung Cư",
+					description:
+						"Theo dõi, quản lý việc thu và chi quỹ bảo trì (2%) theo đúng quy định, đảm bảo nguồn tài chính cho việc duy tu tòa nhà.",
+				},
+				// Bạn có thể thêm các dịch vụ khác tại đây
 			];
 			setServices(data);
 		};

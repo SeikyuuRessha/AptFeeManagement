@@ -89,6 +89,43 @@ const sampleNotifications: NotificationItem[] = [
 		isRead: false,
 		icon: ReportProblemIcon
 	},
+	{
+		id: "notif-typical-fee",
+		title: "Thông Báo Phí Dịch Vụ Chung Cư Tháng 07/2024 - Căn Hộ [Mã Căn Hộ]",
+		content: `Kính gửi Quý cư dân Căn hộ [Mã Căn Hộ] - Chủ hộ [Tên Chủ Hộ],
+
+Ban Quản Lý Chung Cư [Tên Chung Cư] trân trọng thông báo về các khoản phí dịch vụ cần thanh toán cho tháng 07/2024 như sau:
+
+1.  **Phí Quản Lý Vận Hành:** [Số Tiền Phí Quản Lý] VNĐ
+    *(Bao gồm: an ninh, vệ sinh khu vực chung, chăm sóc cây xanh, vận hành thang máy, chiếu sáng công cộng,...)*
+2.  **Phí Giữ Xe Ô Tô (nếu có):** Biển số [Biển Số Xe] - [Số Tiền Phí Giữ Xe Ô Tô] VNĐ
+3.  **Phí Giữ Xe Máy (nếu có):** Số lượng [Số Lượng Xe Máy] - [Số Tiền Phí Giữ Xe Máy] VNĐ
+4.  **Tiền Nước (theo đồng hồ):** Chỉ số cũ [Chỉ Số Cũ] - Chỉ số mới [Chỉ Số Mới] - Tiêu thụ [Số m3] m³ - Đơn giá [Đơn Giá Nước]/m³ - Thành tiền: [Thành Tiền Nước] VNĐ
+5.  **(Các khoản phí khác nếu có, ví dụ: phí hồ bơi, gym...)**
+
+**TỔNG CỘNG CẦN THANH TOÁN: [TỔNG SỐ TIỀN] VNĐ**
+
+**Thời hạn thanh toán:** Vui lòng hoàn tất thanh toán trước ngày 15/07/2024.
+
+**Hình thức thanh toán:**
+*   **Chuyển khoản ngân hàng:**
+    *   Tên tài khoản: [Tên Chủ Tài Khoản Ban Quản Lý]
+    *   Số tài khoản: [Số Tài Khoản]
+    *   Ngân hàng: [Tên Ngân Hàng] - Chi nhánh: [Chi Nhánh]
+    *   Nội dung chuyển khoản: [Mã căn hộ] - Phi dich vu T07.2024 - [Tên chủ hộ]
+*   **Thanh toán trực tuyến qua Cổng Thông Tin Cư Dân:** Nhấn vào nút "Đi đến thanh toán" bên dưới.
+*   **Thanh toán trực tiếp tại Văn phòng Ban Quản Lý** (trong giờ hành chính).
+
+Lưu ý: Để đảm bảo các dịch vụ được cung cấp liên tục và tránh phát sinh phí chậm nộp (nếu có theo quy chế của chung cư), Quý cư dân vui lòng thanh toán đúng hạn.
+Mọi thắc mắc hoặc cần hỗ trợ thêm, xin vui lòng liên hệ Văn phòng Ban Quản Lý qua số điện thoại [Số Điện Thoại BQL] hoặc email [Email BQL].
+
+Trân trọng cảm ơn sự hợp tác của Quý cư dân!`,
+		date: "01/07/2024 09:30",
+		type: "fee_reminder",
+		isRead: false,
+		relatedLink: "/payment?apartmentId=[Mã Căn Hộ]&month=07&year=2024", // Ví dụ link thanh toán cụ thể
+		icon: PaymentIcon
+	},
 ];
 
 const getTypeLabelAndColor = (type: NotificationItem['type']) => {

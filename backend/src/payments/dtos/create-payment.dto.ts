@@ -8,8 +8,9 @@ export class CreatePaymentDTO {
     amount: number;
 
     @IsDate()
+    @IsOptional()
     @Type(() => Date)
-    paymentDate: Date;
+    paymentDate: Date = new Date(Date.now());
 
     @IsOptional()
     @IsIn(["PENDING", "COMPLETED", "FAILED"])

@@ -178,13 +178,13 @@ export default function SubscriptionsManagement() {
 
                     switch (subscription.frequency) {
                         case "monthly":
-                            annualMultiplier = 12;
+                            annualMultiplier = 1;
                             break;
                         case "quarterly":
                             annualMultiplier = 4;
                             break;
                         case "yearly":
-                            annualMultiplier = 1;
+                            annualMultiplier = 12;
                             break;
                     }
 

@@ -18,6 +18,14 @@ import {
     TablePagination,
     Tooltip,
     InputAdornment,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Alert,
+    Snackbar,
+    IconButton,
 } from "@mui/material";
 import Grid from "@mui/material/GridLegacy";
 import {
@@ -28,12 +36,16 @@ import {
     CheckCircle,
     Cancel,
     Search as SearchIcon,
+    PersonAdd,
+    PersonRemove,
+    Edit,
 } from "@mui/icons-material";
 import {
     getApartments,
     getBuildings,
     Apartment,
     Building,
+    assignResident,
 } from "@/services/building";
 import { getUsers } from "@/services/user";
 import { IUser } from "@/interfaces/user";
@@ -55,6 +67,21 @@ export const ApartmentManagementTable: React.FC = () => {
     const [buildingFilter, setBuildingFilter] = useState("all");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    // Dialog states
+    const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+    const [selectedApartment, setSelectedApartment] =
+        useState<ApartmentWithDetails | null>(null);
+    const [selectedResidentId, setSelectedResidentId] = useState<string>("");
+    const [assignLoading, setAssignLoading] = useState(false);
+
+    // Snackbar states
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState<
+        "success" | "error"
+    >("success");
+
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat("vi-VN", {
             style: "currency",
@@ -75,8 +102,114 @@ export const ApartmentManagementTable: React.FC = () => {
                 : apartment.area > 50
                 ? 1.0
                 : 0.9;
-
         return Math.round(apartment.area * baseRentPerSqm * areaMultiplier);
+    };
+
+    // Get available residents (not assigned to any apartment)
+    const getAvailableResidents = () => {
+        const assignedResidentIds = apartments
+            .filter((apt) => apt.residentId)
+            .map((apt) => apt.residentId);
+
+        return users.filter((user) => !assignedResidentIds.includes(user.id));
+    };
+
+    const handleAssignResident = (apartment: ApartmentWithDetails) => {
+        setSelectedApartment(apartment);
+        setSelectedResidentId(apartment.residentId || "");
+        setAssignDialogOpen(true);
+    };
+
+    const handleUnassignResident = async (apartment: ApartmentWithDetails) => {
+        try {
+            setAssignLoading(true);
+            await assignResident(apartment.id, null);
+
+            // Update local state
+            setApartments((prev) =>
+                prev.map((apt) =>
+                    apt.id === apartment.id
+                        ? {
+                              ...apt,
+                              residentId: null,
+                              residentName: null,
+                              status: "vacant" as const,
+                              monthlyRent: 0,
+                          }
+                        : apt
+                )
+            );
+
+            setSnackbarMessage("Resident unassigned successfully!");
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error("Error unassigning resident:", error);
+            setSnackbarMessage(
+                "Failed to unassign resident. Please try again."
+            );
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        } finally {
+            setAssignLoading(false);
+        }
+    };
+
+    const handleConfirmAssignment = async () => {
+        if (!selectedApartment) return;
+
+        try {
+            setAssignLoading(true);
+            const residentIdToAssign = selectedResidentId || null;
+            await assignResident(selectedApartment.id, residentIdToAssign);
+
+            // Update local state
+            const assignedResident = residentIdToAssign
+                ? users.find((u) => u.id === residentIdToAssign)
+                : null;
+
+            setApartments((prev) =>
+                prev.map((apt) =>
+                    apt.id === selectedApartment.id
+                        ? {
+                              ...apt,
+                              residentId: residentIdToAssign,
+                              residentName: assignedResident?.fullName || null,
+                              status: residentIdToAssign
+                                  ? ("occupied" as const)
+                                  : ("vacant" as const),
+                              monthlyRent: residentIdToAssign
+                                  ? calculateMonthlyRent(apt)
+                                  : 0,
+                          }
+                        : apt
+                )
+            );
+
+            setAssignDialogOpen(false);
+            setSelectedApartment(null);
+            setSelectedResidentId("");
+
+            const message = residentIdToAssign
+                ? "Resident assigned successfully!"
+                : "Resident unassigned successfully!";
+            setSnackbarMessage(message);
+            setSnackbarSeverity("success");
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error("Error assigning resident:", error);
+            setSnackbarMessage("Failed to assign resident. Please try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+        } finally {
+            setAssignLoading(false);
+        }
+    };
+
+    const handleCloseDialog = () => {
+        setAssignDialogOpen(false);
+        setSelectedApartment(null);
+        setSelectedResidentId("");
     };
 
     useEffect(() => {
@@ -201,7 +334,6 @@ export const ApartmentManagementTable: React.FC = () => {
             <Typography variant="h6" gutterBottom>
                 Apartments Management
             </Typography>
-
             {/* Filters */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
                 {" "}
@@ -258,7 +390,6 @@ export const ApartmentManagementTable: React.FC = () => {
                     </FormControl>
                 </Grid>
             </Grid>
-
             {/* Summary Statistics */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={6} sm={3}>
@@ -347,7 +478,6 @@ export const ApartmentManagementTable: React.FC = () => {
                     </Box>
                 </Grid>
             </Grid>
-
             {/* Apartments Table */}
             <TableContainer sx={{ maxHeight: 600 }}>
                 <Table stickyHeader>
@@ -373,12 +503,18 @@ export const ApartmentManagementTable: React.FC = () => {
                                 sx={{ fontWeight: "bold" }}
                             >
                                 Monthly Rent
-                            </TableCell>
+                            </TableCell>{" "}
                             <TableCell
                                 align="center"
                                 sx={{ fontWeight: "bold" }}
                             >
                                 Size (m²)
+                            </TableCell>
+                            <TableCell
+                                align="center"
+                                sx={{ fontWeight: "bold" }}
+                            >
+                                Actions
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -478,16 +614,72 @@ export const ApartmentManagementTable: React.FC = () => {
                                     {apartment.status === "occupied"
                                         ? formatCurrency(apartment.monthlyRent)
                                         : "-"}
-                                </TableCell>
+                                </TableCell>{" "}
                                 <TableCell align="center">
                                     {apartment.area.toFixed(2)}
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 1,
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        {apartment.status === "vacant" ? (
+                                            <Tooltip title="Assign Resident">
+                                                <IconButton
+                                                    size="small"
+                                                    color="primary"
+                                                    onClick={() =>
+                                                        handleAssignResident(
+                                                            apartment
+                                                        )
+                                                    }
+                                                    disabled={assignLoading}
+                                                >
+                                                    <PersonAdd />
+                                                </IconButton>
+                                            </Tooltip>
+                                        ) : (
+                                            <>
+                                                <Tooltip title="Change Resident">
+                                                    <IconButton
+                                                        size="small"
+                                                        color="primary"
+                                                        onClick={() =>
+                                                            handleAssignResident(
+                                                                apartment
+                                                            )
+                                                        }
+                                                        disabled={assignLoading}
+                                                    >
+                                                        <Edit />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Remove Resident">
+                                                    <IconButton
+                                                        size="small"
+                                                        color="error"
+                                                        onClick={() =>
+                                                            handleUnassignResident(
+                                                                apartment
+                                                            )
+                                                        }
+                                                        disabled={assignLoading}
+                                                    >
+                                                        <PersonRemove />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </>
+                                        )}
+                                    </Box>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
-
+            </TableContainer>{" "}
             {/* Pagination */}
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25, 50]}
@@ -498,6 +690,100 @@ export const ApartmentManagementTable: React.FC = () => {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
+            {/* Assignment Dialog */}
+            <Dialog
+                open={assignDialogOpen}
+                onClose={handleCloseDialog}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    {selectedApartment?.status === "vacant"
+                        ? "Assign Resident"
+                        : "Change Resident"}
+                </DialogTitle>
+                <DialogContent>
+                    {selectedApartment && (
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                Apartment: {selectedApartment.roomNumber} -{" "}
+                                {selectedApartment.buildingName}
+                            </Typography>
+                            {selectedApartment.residentName && (
+                                <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                >
+                                    Current Resident:{" "}
+                                    {selectedApartment.residentName}
+                                </Typography>
+                            )}
+                        </Box>
+                    )}
+
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <InputLabel>Select Resident</InputLabel>
+                        <Select
+                            value={selectedResidentId}
+                            label="Select Resident"
+                            onChange={(e) =>
+                                setSelectedResidentId(e.target.value)
+                            }
+                        >
+                            <MenuItem value="">
+                                <em>No Resident (Vacant)</em>
+                            </MenuItem>
+                            {getAvailableResidents().map((user) => (
+                                <MenuItem key={user.id} value={user.id}>
+                                    {user.fullName}
+                                </MenuItem>
+                            ))}
+                            {selectedApartment?.residentId && (
+                                <MenuItem
+                                    key={selectedApartment.residentId}
+                                    value={selectedApartment.residentId}
+                                >
+                                    {selectedApartment.residentName} (Current)
+                                </MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+
+                    {selectedResidentId && (
+                        <Alert severity="info" sx={{ mt: 2 }}>
+                            Monthly rent will be calculated as:{" "}
+                            {selectedApartment &&
+                                formatCurrency(
+                                    calculateMonthlyRent(selectedApartment)
+                                )}
+                        </Alert>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button
+                        onClick={handleConfirmAssignment}
+                        variant="contained"
+                        disabled={assignLoading}
+                    >
+                        {assignLoading ? "Processing..." : "Confirm"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+            >
+                <Alert
+                    onClose={() => setSnackbarOpen(false)}
+                    severity={snackbarSeverity}
+                    sx={{ width: "100%" }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Paper>
     );
 };

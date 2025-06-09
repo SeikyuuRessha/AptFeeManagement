@@ -44,6 +44,7 @@ export const createApartment = async (apartmentData: {
     roomNumber: number;
     area: number;
     buildingId: string;
+    residentId?: string;
 }): Promise<Apartment> => {
     const res = (await api.post(
         "/apartments",
@@ -100,4 +101,19 @@ export const deleteBuilding = async (id: string): Promise<void> => {
     if (res.code === 0) {
         throw new Error(res.msg);
     }
+};
+
+export const assignResident = async (
+    apartmentId: string,
+    residentId: string | null
+): Promise<Apartment> => {
+    const res = (await api.put(`/apartments/${apartmentId}/assign-resident`, {
+        residentId,
+    })) as IResponse<Apartment>;
+
+    if (res.code === 0) {
+        throw new Error(res.msg);
+    }
+
+    return res.data;
 };

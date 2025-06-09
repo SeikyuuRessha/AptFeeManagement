@@ -11,12 +11,22 @@ import { ExceptionCode } from "../common/exception/exception-code";
 @Injectable()
 export class ApartmentsService {
     constructor(private readonly prisma: PrismaService) {}
-    createApartment(data: CreateApartmentDTO) {
+    createApartment(data: CreateApartmentDTO, residentId?: string) {
         return handleService(async () => {
+            if (residentId) {
+                const resident = await this.prisma.resident.findUnique({
+                    where: { id: residentId },
+                });
+
+                if (!resident) {
+                    throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { residentId });
+                }
+            }
+
             return this.prisma.apartment.create({
                 data: {
                     ...data,
-                    residentId: null,
+                    residentId: residentId || null,
                 },
                 select: {
                     building: true,
@@ -50,6 +60,48 @@ export class ApartmentsService {
                 where: { id },
                 data,
                 select: { resident: true },
+            });
+        });
+    }
+
+    assignResident(apartmentId: string, residentId: string | null) {
+        return handleService(async () => {
+            const apartment = await this.prisma.apartment.findUnique({ where: { id: apartmentId } });
+            if (!apartment) {
+                throw new AppException(ExceptionCode.APARTMENT_NOT_FOUND, { apartmentId });
+            }
+
+            if (residentId) {
+                const resident = await this.prisma.resident.findUnique({
+                    where: { id: residentId },
+                });
+
+                if (!resident) {
+                    throw new AppException(ExceptionCode.RESIDENT_NOT_FOUND, { residentId });
+                }
+
+                // Check if resident is already assigned to another apartment
+                const existingAssignment = await this.prisma.apartment.findFirst({
+                    where: {
+                        residentId: residentId,
+                        id: { not: apartmentId },
+                    },
+                });
+                if (existingAssignment) {
+                    throw new AppException(ExceptionCode.VALIDATION_ERROR, {
+                        message: "Resident is already assigned to another apartment",
+                        residentId,
+                    });
+                }
+            }
+
+            return this.prisma.apartment.update({
+                where: { id: apartmentId },
+                data: { residentId },
+                include: {
+                    building: true,
+                    resident: true,
+                },
             });
         });
     }

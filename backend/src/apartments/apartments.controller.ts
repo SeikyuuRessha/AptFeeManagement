@@ -15,8 +15,9 @@ export class ApartmentsController {
     @Post()
     @UseGuards(AccessTokenGuard, RolesGuard)
     @Roles("admin")
-    createApartment(@Body() data: CreateApartmentDTO) {
-        return this.apartmentsService.createApartment(data);
+    createApartment(@Body() data: CreateApartmentDTO, @Req() req: Request) {
+        const residentId = req.body.residentId;
+        return this.apartmentsService.createApartment(data, residentId);
     }
 
     @Get()
@@ -34,6 +35,12 @@ export class ApartmentsController {
     @Roles("admin")
     updateApartment(@Param("id") id: string, @Body() data: UpdateApartmentDTO) {
         return this.apartmentsService.updateApartment(id, data);
+    }
+    @Put(":id/assign-resident")
+    @UseGuards(AccessTokenGuard, RolesGuard)
+    @Roles("admin")
+    assignResident(@Param("id") apartmentId: string, @Body("residentId") residentId: string | null) {
+        return this.apartmentsService.assignResident(apartmentId, residentId);
     }
 
     @Delete(":id")

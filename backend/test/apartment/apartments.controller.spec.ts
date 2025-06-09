@@ -27,6 +27,7 @@ describe("ApartmentsController", () => {
             createApartment: jest.fn(),
             updateApartment: jest.fn(),
             deleteApartment: jest.fn(),
+            assignResident: jest.fn(),
         };
 
         const module: TestingModule = await Test.createTestingModule({
@@ -88,6 +89,12 @@ describe("ApartmentsController", () => {
     describe("createApartment", () => {
         createApartmentTestCases.forEach((testCase: CreateApartmentTestCase) => {
             it(testCase.description, async () => {
+                const mockRequest = {
+                    body: {
+                        residentId: undefined,
+                    },
+                } as any;
+
                 if (testCase.expectedResult.success) {
                     const serviceResult = {
                         code: 1,
@@ -95,15 +102,15 @@ describe("ApartmentsController", () => {
                         data: testCase.expectedResult.data,
                     };
                     apartmentsService.createApartment.mockResolvedValue(serviceResult);
-                    const result = await controller.createApartment(testCase.data);
+                    const result = await controller.createApartment(testCase.data, mockRequest);
                     expect(result).toEqual(serviceResult);
                 } else {
                     apartmentsService.createApartment.mockRejectedValue(
                         new Error(testCase.expectedResult.error!.message)
                     );
-                    await expect(controller.createApartment(testCase.data)).rejects.toThrow();
+                    await expect(controller.createApartment(testCase.data, mockRequest)).rejects.toThrow();
                 }
-                expect(apartmentsService.createApartment).toHaveBeenCalledWith(testCase.data);
+                expect(apartmentsService.createApartment).toHaveBeenCalledWith(testCase.data, undefined);
             });
         });
     });
@@ -149,6 +156,83 @@ describe("ApartmentsController", () => {
                 }
                 expect(apartmentsService.deleteApartment).toHaveBeenCalledWith(testCase.id);
             });
+        });
+    });
+    describe("assignResident", () => {
+        it("should assign a resident to an apartment", async () => {
+            const apartmentId = "apt-1";
+            const residentId = "resident-1";
+            const serviceResult = {
+                code: 1,
+                msg: "Success",
+                data: {
+                    id: apartmentId,
+                    residentId,
+                    roomNumber: 101,
+                    area: 75,
+                    buildingId: "building-1",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    building: {
+                        id: "building-1",
+                        name: "Building A",
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        address: "123 Main St",
+                        apartmentCount: 10,
+                    },
+                    resident: {
+                        id: residentId,
+                        fullName: "John Doe",
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        email: "john@example.com",
+                        password: "hashedPassword",
+                        phone: "1234567890",
+                        refreshToken: null,
+                        role: "resident",
+                    },
+                },
+            };
+
+            apartmentsService.assignResident.mockResolvedValue(serviceResult);
+            const result = await controller.assignResident(apartmentId, residentId);
+
+            expect(result).toEqual(serviceResult);
+            expect(apartmentsService.assignResident).toHaveBeenCalledWith(apartmentId, residentId);
+        });
+
+        it("should unassign a resident from an apartment", async () => {
+            const apartmentId = "apt-1";
+            const residentId = null;
+            const serviceResult = {
+                code: 1,
+                msg: "Success",
+                data: {
+                    id: apartmentId,
+                    residentId: null,
+                    roomNumber: 101,
+                    area: 75,
+                    buildingId: "building-1",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    building: {
+                        id: "building-1",
+                        name: "Building A",
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        address: "123 Main St",
+                        apartmentCount: 10,
+                    },
+                    resident: null,
+                },
+            };
+
+            apartmentsService.assignResident.mockResolvedValue(serviceResult);
+            const result = await controller.assignResident(apartmentId, residentId);
+
+            expect(result).toEqual(serviceResult);
+            expect(apartmentsService.assignResident).toHaveBeenCalledWith(apartmentId, residentId);
         });
     });
 });

@@ -25,6 +25,7 @@ describe("ApartmentsService", () => {
             apartment: {
                 findMany: jest.fn(),
                 findUnique: jest.fn(),
+                findFirst: jest.fn(),
                 create: jest.fn(),
                 update: jest.fn(),
                 delete: jest.fn(),
@@ -107,6 +108,58 @@ describe("ApartmentsService", () => {
                 });
             });
         });
+        it("should create an apartment with a resident", async () => {
+            const apartmentData = {
+                roomNumber: 101,
+                buildingId: "building-1",
+                area: 75,
+            };
+            const residentId = "resident-1";
+            const mockResident = { id: residentId, fullName: "John Doe" };
+            const expectedApartment = {
+                id: "apt-1",
+                ...apartmentData,
+                residentId,
+                building: { name: "Building A" },
+                resident: mockResident,
+            };
+
+            prisma.resident.findUnique.mockResolvedValue(mockResident);
+            prisma.apartment.create.mockResolvedValue(expectedApartment);
+
+            const result = await service.createApartment(apartmentData, residentId);
+
+            expect(result.code).toBe(1);
+            expect(result.data).toEqual(expectedApartment);
+            expect(prisma.resident.findUnique).toHaveBeenCalledWith({
+                where: { id: residentId },
+            });
+            expect(prisma.apartment.create).toHaveBeenCalledWith({
+                data: {
+                    ...apartmentData,
+                    residentId,
+                },
+                select: {
+                    building: true,
+                    resident: true,
+                },
+            });
+        });
+        it("should throw error when creating apartment with non-existent resident", async () => {
+            const apartmentData = {
+                roomNumber: 102,
+                buildingId: "building-1",
+                area: 75,
+            };
+            const residentId = "non-existent-resident";
+
+            prisma.resident.findUnique.mockResolvedValue(null);
+
+            await expect(service.createApartment(apartmentData, residentId)).rejects.toThrow();
+            expect(prisma.resident.findUnique).toHaveBeenCalledWith({
+                where: { id: residentId },
+            });
+        });
     });
     describe("updateApartment", () => {
         updateApartmentTestCases.forEach((testCase: UpdateApartmentTestCase) => {
@@ -156,6 +209,101 @@ describe("ApartmentsService", () => {
                     await expect(service.deleteApartment(testCase.id)).rejects.toThrow();
                 }
             });
+        });
+    });
+
+    describe("assignResident", () => {
+        it("should assign a resident to an apartment", async () => {
+            const apartmentId = "apt-1";
+            const residentId = "resident-1";
+            const mockApartment = { id: apartmentId, residentId: null };
+            const mockResident = { id: residentId, fullName: "John Doe" };
+            const mockUpdatedApartment = {
+                id: apartmentId,
+                residentId,
+                building: { name: "Building A" },
+                resident: mockResident,
+            };
+
+            prisma.apartment.findUnique.mockResolvedValue(mockApartment);
+            prisma.resident.findUnique.mockResolvedValue(mockResident);
+            prisma.apartment.findFirst.mockResolvedValue(null); // No existing assignment
+            prisma.apartment.update.mockResolvedValue(mockUpdatedApartment);
+
+            const result = await service.assignResident(apartmentId, residentId);
+
+            expect(result.code).toBe(1);
+            expect(result.data).toEqual(mockUpdatedApartment);
+            expect(prisma.apartment.update).toHaveBeenCalledWith({
+                where: { id: apartmentId },
+                data: { residentId },
+                include: {
+                    building: true,
+                    resident: true,
+                },
+            });
+        });
+
+        it("should unassign a resident from an apartment", async () => {
+            const apartmentId = "apt-1";
+            const residentId = null;
+            const mockApartment = { id: apartmentId, residentId: "existing-resident" };
+            const mockUpdatedApartment = {
+                id: apartmentId,
+                residentId: null,
+                building: { name: "Building A" },
+                resident: null,
+            };
+
+            prisma.apartment.findUnique.mockResolvedValue(mockApartment);
+            prisma.apartment.update.mockResolvedValue(mockUpdatedApartment);
+
+            const result = await service.assignResident(apartmentId, residentId);
+
+            expect(result.code).toBe(1);
+            expect(result.data).toEqual(mockUpdatedApartment);
+            expect(prisma.apartment.update).toHaveBeenCalledWith({
+                where: { id: apartmentId },
+                data: { residentId: null },
+                include: {
+                    building: true,
+                    resident: true,
+                },
+            });
+        });
+
+        it("should throw error when apartment not found", async () => {
+            const apartmentId = "non-existent-apt";
+            const residentId = "resident-1";
+
+            prisma.apartment.findUnique.mockResolvedValue(null);
+
+            await expect(service.assignResident(apartmentId, residentId)).rejects.toThrow();
+        });
+
+        it("should throw error when resident not found", async () => {
+            const apartmentId = "apt-1";
+            const residentId = "non-existent-resident";
+            const mockApartment = { id: apartmentId, residentId: null };
+
+            prisma.apartment.findUnique.mockResolvedValue(mockApartment);
+            prisma.resident.findUnique.mockResolvedValue(null);
+
+            await expect(service.assignResident(apartmentId, residentId)).rejects.toThrow();
+        });
+
+        it("should throw error when resident is already assigned to another apartment", async () => {
+            const apartmentId = "apt-1";
+            const residentId = "resident-1";
+            const mockApartment = { id: apartmentId, residentId: null };
+            const mockResident = { id: residentId, fullName: "John Doe" };
+            const mockExistingAssignment = { id: "apt-2", residentId };
+
+            prisma.apartment.findUnique.mockResolvedValue(mockApartment);
+            prisma.resident.findUnique.mockResolvedValue(mockResident);
+            prisma.apartment.findFirst.mockResolvedValue(mockExistingAssignment);
+
+            await expect(service.assignResident(apartmentId, residentId)).rejects.toThrow();
         });
     });
 });
